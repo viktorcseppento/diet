@@ -1,0 +1,100 @@
+@use 'sass:color';
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+button {
+  cursor: pointer;
+}
+
+$primary-color: hsl(132, 100%, 27%);
+$primary-color-hover: color.scale($color: $primary-color, $lightness: 10%);
+$primary-background-color: color.scale($color: $primary-color, $alpha: -80%);
+$primary-background-color-hover: color.scale($color: $primary-color, $alpha: -90%);
+$item-color : hsl(120, 80%, 96%);
+$item-alt-color : hsl(120, 80%, 92%);
+$item-hover-color : hsl(120, 80%, 80%);
+$selected-background-color: color.scale($color: $primary-color, $alpha: -30%);
+$selected-background-color-hover: color.scale($color: $primary-color, $alpha: -20%);
+$trash-color: hsl(0, 100%, 70%);
+$trash-color-hover: hsl(0, 100%, 80%);
+$light-border-color: hsl(0, 0%, 90%);
+$medium-border-color: hsl(0, 0%, 60%);
+$heavy-border-color: hsl(0, 0%, 20%);
+
+$popover-shadow: rgba(0, 0, 0, 0.5) 2px -2px 12px;
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input,
+select {
+  border: solid 1px $medium-border-color;
+  border-radius: 4px;
+}
+
+button {
+  width: fit-content;
+
+  &:hover {
+    color: $primary-color;
+    background-color: $primary-background-color-hover;
+  }
+
+  &[data-disabled]:hover {
+    color: revert;
+    background-color: revert;
+  }
+
+  transition: all 0.3s ease;
+}
+
+b {
+  font-weight: 600;
+}
+
+option {
+  width: 100px;
+}
+
+* {
+  font-family: Arial;
+}
+
+@keyframes show {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes hide {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+}

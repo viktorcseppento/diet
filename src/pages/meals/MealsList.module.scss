@@ -1,0 +1,162 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding: 16px;
+}
+
+.dayMacros {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+}
+
+.newMealButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.mealsList {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+}
+
+.meal {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    border: solid 1px $light-border-color;
+    border-radius: 4px;
+    padding: 8px;
+
+    &:nth-child(odd) {
+        background-color: $item-color;
+    }
+
+    &:nth-child(even) {
+        background-color: $item-alt-color;
+    }
+}
+
+.mealHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+}
+
+.mealButtons {
+    display: flex;
+    gap: 8px;
+}
+
+.mealButton {
+    border: none;
+    background-color: transparent;
+    color: $primary-color;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+
+    &:hover {
+        background-color: transparent;
+        color: $primary-color-hover;
+    }
+}
+
+.trashButton {
+    color: $trash-color;
+
+    &:hover {
+        color: $trash-color-hover;
+    }
+}
+
+.popover {
+    animation: hide 0.3s ease;
+
+    &[data-expanded] {
+        animation: show 0.3s ease;
+    }
+}
+
+.itemButtons {
+    display: flex;
+    gap: 8px;
+}
+
+.itemButton {
+    border: none;
+    background-color: transparent;
+    color: $primary-color;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+
+    &:hover {
+        background-color: transparent;
+        color: $primary-color-hover;
+    }
+}
+
+.trashButton {
+    color: $trash-color;
+
+    &:hover {
+        color: $trash-color-hover;
+    }
+}
+
+.mealContent {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+}
+
+.foodsList {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid ;
+    border-radius: 4px;
+    padding: 8px;
+    row-gap: 8px;
+}
+
+.food {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2px;
+}
+
+.foodTitle {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.mealMacros {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+}
+
+.foodMacros{
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.comment {
+    display: flex;
+    gap: 4px;
+}

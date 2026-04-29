@@ -1,0 +1,137 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.container {
+    padding: 16px;
+}
+
+.control {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.dialogTrigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.plusIcon {
+    font-weight: 1000;
+    height: 40px;
+    width: 40px;
+    font-size: 40px;
+    // padding-top: 4px;
+    color: $primary-color;
+}
+
+.listContainer {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 32px;
+    column-gap: 12px;
+    margin-top: 16px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 350px;
+}
+
+.listHeader {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+}
+
+.column:nth-child(odd) .item {
+    &:nth-child(odd) {
+        background-color: $item-color;
+    }
+
+    &:nth-child(even) {
+        background-color: $item-alt-color;
+    }
+}
+
+.column:nth-child(even) .item {
+    &:nth-child(odd) {
+        background-color: $item-alt-color;
+    }
+
+    &:nth-child(even) {
+        background-color: $item-color;
+    }
+}
+
+.item {
+    padding: 8px;
+    border: solid 1px $light-border-color;
+    border-radius: 16px;
+
+    &:hover {
+        background-color: $item-hover-color !important;
+    }
+
+    transition: all 0.3s ease;
+}
+
+.itemHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.name {
+    font-size: 16px;
+}
+
+.itemButtons {
+    display: flex;
+    gap: 8px;
+}
+
+.itemButton {
+    border: none;
+    background-color: transparent;
+    color: $primary-color;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+
+    &:hover {
+        background-color: transparent;
+        color: $primary-color-hover;
+    }
+}
+
+.trashButton {
+    color: $trash-color;
+
+    &:hover {
+        color: $trash-color-hover;
+    }
+}
+
+.description {
+    display: flex;
+
+    flex-direction: column;
+    font-size: 14px;
+}

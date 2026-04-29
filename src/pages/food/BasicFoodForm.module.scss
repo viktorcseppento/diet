@@ -1,0 +1,23 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.smallInput {
+    width: 30px;
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+}
+
+.formButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    width: fit-content;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 16px;
+    font-weight: 600;
+}

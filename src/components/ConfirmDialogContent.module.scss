@@ -1,0 +1,36 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.button {
+    font-size: 14px;
+    padding: 4px 16px;
+    border: solid 1px $medium-border-color;
+    border-radius: 4px;
+    height: 32px;
+}
+
+.cancelButton {
+    background-color: transparent;
+}
+
+.confirmButton {
+    background-color: $primary-color;
+    color: white;
+    border-color: $heavy-border-color;
+
+    &:hover {
+        background-color: $primary-color-hover;
+        color: white;
+    }
+}

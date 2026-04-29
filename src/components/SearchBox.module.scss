@@ -1,0 +1,36 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.container {
+    position: relative;
+}
+
+.input {
+    width: 200px;
+    padding: 8px 28px 8px 28px;
+    border-radius: 8px;
+    border: 1px solid $medium-border-color;
+    font-size: 16px;
+}
+
+.magnifyingGlassIcon {
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+}
+
+.clearIcon {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    // color: $primary-color;
+    cursor: pointer;
+
+    &:hover {
+        color: color.scale(black, $lightness: 30%);
+    }
+}

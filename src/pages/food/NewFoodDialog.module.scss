@@ -1,0 +1,38 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.tabsList {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $medium-border-color;
+}
+
+.tabsTrigger {
+    width: 100%;
+    font-size: 18px;
+    background-color: transparent;
+    border: none;
+
+    padding: 8px 0 2px 0;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: $primary-background-color-hover;
+        border-radius: 5px;
+    }
+
+    &[data-selected] {
+        color: $primary-color;
+    }
+}
+
+.tabsIndicator {
+    position: absolute;
+    left: 0;
+    background-color: $primary-color;
+    transition: all 250ms;
+    bottom: -1px;
+    height: 2px;
+}

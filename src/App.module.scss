@@ -1,0 +1,129 @@
+@use 'index' as *;
+@use 'sass:color';
+
+.tabsList {
+    position: relative;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border-bottom: 1px solid $medium-border-color;
+}
+
+.tabsTrigger {
+    width: 100%;
+    font-size: 22px;
+    background-color: transparent;
+    border: none;
+    padding: 16px 0 4px 0;
+    transition: all 0.3s ease;
+
+    &[data-selected] {
+        color: $primary-color;
+        background-color: $primary-background-color-hover;
+        background-color: $primary-background-color;
+    }
+}
+
+.tabsIndicator {
+    position: absolute;
+    left: 0;
+    background-color: $primary-color;
+    transition: all 250ms;
+    bottom: -1px;
+    height: 3px;
+}
+
+.container {
+    padding: 16px;
+}
+
+.form {
+    margin-top: 2px;
+    padding: 16px;
+    border: solid 1px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    overflow-y: auto;
+    max-height: calc(100vh - 160px);
+}
+
+.formRow {
+    display: flex;
+    gap: 20px;
+    flex-flow: wrap;
+}
+
+.formField {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+}
+
+.formFieldColumn {
+    // align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.smallInput {
+    width: 30px;
+}
+
+.mediumInput {
+    width: 40px;
+}
+
+.formButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    width: fit-content;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.dropdownIcon {
+    transition: transform 0.3s ease;
+
+    &[data-expanded] {
+        transform: rotate(180deg);
+    }
+}
+
+.dropdownContent {
+    border: solid 1px $light-border-color;
+    border-radius: 8px;
+    margin-top: 2px;
+    animation: hide 0.3s ease;
+
+    &[data-expanded] {
+        animation: show 0.3s ease;
+    }
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 8px;
+
+    user-select: none;
+    cursor: pointer;
+
+    &.selected {
+        background-color: $primary-background-color-hover;
+    }
+
+    &[data-highlighted] {
+        background-color: $primary-background-color-hover;
+    }
+
+    transition: all 0.3s ease;
+}

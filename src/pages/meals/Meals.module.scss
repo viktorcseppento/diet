@@ -1,0 +1,146 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.header {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+
+    @media screen and (min-width: 768px) {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        column-gap: 16px;
+    }
+}
+
+.newDayButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.peopleControl {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0;
+    width: 256px;
+    align-self: flex-end;
+
+    @media screen and (min-width: 768px) {
+        align-self: auto;
+        order: 2;
+    }
+}
+
+.dropdownButton {
+    // border: solid 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    width: 200px;
+
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 16px;
+}
+
+.dropdownContent {
+    width: 200px;
+}
+
+.dropdownItem {
+    &:nth-last-child(2) {
+        border-bottom: solid 1px $light-border-color;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+}
+
+.iconButton {
+    border: none;
+    background-color: transparent;
+    color: $primary-color;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+
+    &:hover {
+        background-color: transparent;
+        color: $primary-color-hover;
+    }
+
+    &:disabled {
+        color: gray !important;
+        background-color: transparent !important;
+    }
+}
+
+.trashButton {
+    color: $trash-color;
+
+    &:hover {
+        color: $trash-color-hover;
+    }
+}
+
+.dayControl {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto; // gap: 16px;
+    height: 48px;
+
+    @media screen and (min-width: 768px) {
+        order: 1;
+    }
+}
+
+.dayChevronButton {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    text-align: center;
+    border-radius: 16px;
+    padding: 8px 0px;
+
+    &:hover {
+        background-color: $primary-background-color-hover;
+        color: $primary-color-hover;
+    }
+}
+
+.dayText {
+    border: none;
+    background-color: transparent;
+    font-size: 22px;
+    font-weight: 700;
+    color: $primary-color;
+    padding: 8px;
+    border-radius: 16px;
+    cursor: pointer;
+    flex: 1 1 auto;
+
+    &:hover {
+        background-color: $primary-background-color-hover;
+        color: $primary-color-hover;
+    }
+
+    transition: all 0.3s ease;
+}
+
+.popover {
+    animation: hide 0.3s ease;
+
+    &[data-expanded] {
+        animation: show 0.3s ease;
+    }
+}

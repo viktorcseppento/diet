@@ -1,0 +1,88 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.ingredientButton {
+    border: solid 1px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    border-radius: 8px;
+    padding: 4px 6px;
+    font-size: 14px;
+}
+
+.ingredientsList {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid ;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.ingredient {
+    display: flex;
+    flex-flow: wrap;
+    column-gap: 20px;
+    row-gap: 8px;
+    padding: 8px;
+    border: solid 1px $light-border-color;
+    border-radius: 4px;
+
+    &:nth-child(odd) {
+        background-color: $item-color;
+    }
+
+    &:nth-child(even) {
+        background-color: $item-alt-color;
+    }
+
+    transition: all 0.3s ease;
+}
+
+.ingredientHeader {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.foodSelect {
+    padding: 4px 4px;
+    width: 90%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.trashButton {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    color: $trash-color;
+
+    &:hover {
+        background-color: transparent;
+        color: $trash-color-hover;
+    }
+}
+
+.macroText {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.macroTextTitle {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.popover {
+    animation: hide 0.3s ease;
+
+    &[data-expanded] {
+        animation: show 0.3s ease;
+    }
+}

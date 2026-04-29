@@ -1,0 +1,74 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.dialogOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgb(0 0 0 / 0.2);
+    animation: overlayHide 250ms ease;
+
+    &[data-expanded] {
+        animation: overlayShow 250ms ease;
+    }
+}
+
+.dialogContainer {
+    position: fixed;
+    display: flex;
+    width: 100%;
+    top: 12px;
+    justify-content: center;
+    max-height: calc(100vh - 24px);
+}
+
+.dialogHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.dialogContent {
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+    width: 400px;
+
+    animation: hide 0.3s ease;
+
+    &[data-expanded] {
+        animation: show 0.3s ease;
+    }
+}
+
+.dialogTitle {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.dialogCloseButton {
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+}
+
+@keyframes overlayShow {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes overlayHide {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

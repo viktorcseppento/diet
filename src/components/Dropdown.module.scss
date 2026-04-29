@@ -1,0 +1,45 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.container {
+    background-color: white;
+    width: 250px;
+    height: 300px;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: $popover-shadow;
+    border: solid 1px $light-border-color;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.item {
+    padding: 4px 8px;
+    // padding: 20px;
+    // box-sizing: content-box;
+    border-radius: 8px;
+    border: none;
+    background-color: transparent;
+    text-align: left;
+    width: 100%;
+    font-size: 16px;
+
+    &:focus {
+        border: none;
+    }
+}
+
+.active {
+    border: solid 1px black;
+}
+
+.selected {
+    background-color: $selected-background-color;
+
+    &:hover {
+        background-color: $selected-background-color-hover;
+    }
+
+    color: white !important;
+}

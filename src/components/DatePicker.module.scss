@@ -1,0 +1,142 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.container {
+    background-color: white;
+    width: 300px;
+    height: 300px;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: $popover-shadow;
+    border: solid 1px $light-border-color;
+    display: flex;
+    flex-direction: column;
+}
+
+.controls {
+    display: flex;
+    gap: 2px;
+    justify-content: space-between;
+}
+
+.arrows {
+    display: flex;
+}
+
+.arrowButton {
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+.todayButton {
+    font-size: 16px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 8px;
+    height: 32px;
+    background-color: transparent;
+}
+
+.selectControls {
+    display: flex;
+}
+
+.yearSelect {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.yearArrowButton {
+    font-size: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    padding: 8px 0px;
+}
+
+.yearText {
+    font-size: 12px;
+    padding: 4px 0px;
+    user-select: none;
+}
+
+.select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+.monthSelect {
+    width: 92px;
+}
+
+.dropdownContent {
+    background-color: white;
+    border: solid 1px $medium-border-color;
+}
+
+.dropdownItem {
+    padding: 4px 8px;
+}
+
+.calendar {
+    // width: 200px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.day {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $primary-background-color-hover;
+    }
+
+    transition: all 0.3s ease;
+}
+
+.calendar>:nth-child(-n+7) {
+    background-color: transparent;
+    user-select: none;
+    cursor: default;
+    font-weight: 600;
+}
+
+.otherMonth {
+    opacity: 0.4;
+}
+
+.selectedDay {
+    background-color: $selected-background-color;
+
+    &:hover {
+        background-color: $selected-background-color-hover;
+    }
+
+    color: white;
+}
+
+.mark {
+    position: absolute;
+    top: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: $primary-color;
+}
