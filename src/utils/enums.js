@@ -3,8 +3,12 @@ export const MEASURE_UNITS = [
     { id: 1, key: 'PORTION', label: '1 adag' }
 ];
 
+export function measureUnitToLabel(measureUnit) {
+    return MEASURE_UNITS.find(mu => mu.key === measureUnit)?.label || '';
+}
+
 export function mesaureUnitToText(measureUnit) {
-    switch (measureUnit.key) {
+    switch (measureUnit) {
         case 'HUNDRED_GRAMS':
             return 'g';
         case 'PORTION':

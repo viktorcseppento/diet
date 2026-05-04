@@ -1,12 +1,14 @@
 import { Button } from '@kobalte/core/button';
 import { DropdownMenu } from '@kobalte/core/dropdown-menu';
 import { Popover } from '@kobalte/core/popover';
-import { createMemo, createSignal, For } from 'solid-js';
+import { createEffect, createMemo, createResource, createSignal, For } from 'solid-js';
 import appStyles from '~/App.module.scss';
 import ConfirmDialogContent from '../../components/ConfirmDialogContent';
 import DatePicker from '../../components/DatePicker';
 import { useDialogContext } from '../../context/DialogContext';
-import { useStore } from '../../context/StoreContext';
+import { getMealDatesByPerson } from '../../data/mealRepository';
+import { getPeople, removePerson } from '../../data/personRepository';
+import createLiveQuery from '../../hooks/createLiveQuery';
 import { classList, translateMonth } from '../../utils/utils';
 import styles from './Meals.module.scss';
 import MealsList from './MealsList';
@@ -15,31 +17,31 @@ import PersonForm from './PersonForm';
 const today = new Date();
 
 export default function Meals() {
-    const { people, removePerson } = useStore();
+    const people = createLiveQuery(getPeople);
     const { setDialogData } = useDialogContext();
-    const [selectedPerson, setSelectedPerson] = createSignal(people[0] ? { person: people[0], listIdx: 0 } : null);
+    const [selectedPersonIdx, setSelectedPersonIdx] = createSignal();
     const [selectedDay, setSelectedDay] = createSignal({ year: today.getFullYear(), month: today.getMonth(), day: today.getDate() });
 
-    const selectedPersonIdx = createMemo(() => selectedPerson()?.listIdx);
+    const selectedPerson = createMemo(() => selectedPersonIdx() != null ? people()[selectedPersonIdx()] : null);
+
+    const [mealDates] = createResource(selectedPerson, async person => {
+        return await getMealDatesByPerson(person.id);
+    });
+
+    createEffect(() => {
+        if (people().length === 0) {
+            setSelectedPersonIdx(null);
+        }
+
+        if (selectedPersonIdx() == null && people().length > 0) {
+            setSelectedPersonIdx(0);
+        }
+    });
 
     const resetSelectedDay = () => {
         const today = new Date();
         setSelectedDay({ year: today.getFullYear(), month: today.getMonth(), day: today.getDate() });
     };
-
-    const selectedDayStr = createMemo(() => {
-        const day = selectedDay();
-        return `${day.year}-${String(day.month + 1).padStart(2, '0')}-${String(day.day).padStart(2, '0')}`;
-    });
-
-    const mealDates = createMemo(() => {
-        if (!selectedPerson()) return [];
-        
-        return Object.keys(people[selectedPerson().listIdx].dates).map(dateStr => {
-            const [year, month, day] = dateStr.split('-').map(Number);
-            return { year, month: month - 1, day };
-        });
-    });
 
     const navigateDay = (direction) => {
         setSelectedDay(day => {
@@ -49,8 +51,8 @@ export default function Meals() {
         });
     };
 
-    const handlePersonSelect = (person, idx) => {
-        setSelectedPerson({ person, listIdx: idx });
+    const handlePersonSelect = (idx) => {
+        setSelectedPersonIdx(idx);
         resetSelectedDay();
     };
 
@@ -61,7 +63,7 @@ export default function Meals() {
             content: () => (
                 <PersonForm
                     onSubmit={() => {
-                        setSelectedPerson({ person: people[people.length - 1], listIdx: people.length - 1 });
+                        setSelectedPersonIdx(people().length - 1);
                         resetSelectedDay();
                     }}
                 />
@@ -75,10 +77,8 @@ export default function Meals() {
             title: 'Személy szerkesztése',
             content: () => (
                 <PersonForm
-                    initialData={selectedPerson().person}
-                    idx={selectedPersonIdx}
+                    initialData={selectedPerson()}
                     onSubmit={() => {
-                        setSelectedPerson(selectedPerson => ({ person: people[selectedPerson.listIdx], listIdx: selectedPerson.listIdx }));
                         resetSelectedDay();
                     }}
                 />
@@ -93,16 +93,15 @@ export default function Meals() {
             content: () => (
                 <ConfirmDialogContent
                     text={`Biztosan törli a kijelölt személyt?`}
-                    onConfirm={() => {
+                    onConfirm={async () => {
                         const currentIdx = selectedPersonIdx();
-                        let nextSelectedPerson = null;
-                        if (people.length > 1) {
-                            const nextIdx = currentIdx === 0 ? 1 : currentIdx - 1;
-                            nextSelectedPerson = { person: people[nextIdx], listIdx: currentIdx === 0 ? 0 : nextIdx };
+                        let nextSelectedPersonIdx = null;
+                        if (people().length > 1) {
+                            nextSelectedPersonIdx = currentIdx === 0 ? 0 : currentIdx - 1;
                         }
 
-                        setSelectedPerson(nextSelectedPerson);
-                        removePerson(currentIdx);
+                        await removePerson(selectedPerson().id);
+                        setSelectedPersonIdx(nextSelectedPersonIdx);
                         resetSelectedDay();
                     }}
                 />
@@ -116,7 +115,7 @@ export default function Meals() {
                 <div class={styles.peopleControl}>
                     <DropdownMenu modal={false}>
                         <DropdownMenu.Trigger class={styles.dropdownButton}>
-                            <span>{selectedPerson()?.person.name ?? "Válassz személyt!"}</span>
+                            <span>{selectedPerson()?.name ?? "Válassz személyt!"}</span>
                             <DropdownMenu.Icon class={appStyles.dropdownIcon}>
                                 <i class="fa-solid fa-chevron-down" />
                             </DropdownMenu.Icon>
@@ -125,10 +124,10 @@ export default function Meals() {
                             <DropdownMenu.Content
                                 class={classList(appStyles.dropdownContent, styles.dropdownContent)}
                             >
-                                <For each={people}>{(person, idx) =>
+                                <For each={people()}>{(person, idx) =>
                                     <DropdownMenu.Item
                                         class={classList(appStyles.dropdownItem, styles.dropdownItem, selectedPerson() && selectedPersonIdx() === idx() ? appStyles.selected : '')}
-                                        onSelect={() => handlePersonSelect(person, idx())}
+                                        onSelect={() => handlePersonSelect(idx())}
                                     >
                                         {person.name}
                                     </DropdownMenu.Item>
@@ -145,14 +144,14 @@ export default function Meals() {
                     </DropdownMenu>
                     <Button
                         class={styles.iconButton}
-                        disabled={!selectedPerson()}
+                        disabled={selectedPersonIdx() == null}
                         onClick={handleEditPerson}
                     >
                         <i class={`fa-solid fa-pen-to-square`} />
                     </Button>
                     <Button
                         class={classList(styles.iconButton, styles.trashButton)}
-                        disabled={!selectedPerson()}
+                        disabled={selectedPersonIdx() == null}
                         onClick={handleDeletePerson}
                     >
                         <i class={`fa-solid fa-trash`} />
@@ -181,7 +180,7 @@ export default function Meals() {
                     </Button>
                 </div>
             </div>
-            <MealsList personIdx={selectedPersonIdx} dayStr={selectedDayStr} />
+            <MealsList person={selectedPerson} day={selectedDay} />
         </div>
     );
 }

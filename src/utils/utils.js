@@ -6,6 +6,13 @@ export function formatNumber(num) {
     }
 }
 
+export function timeStrFromDateTime(dateTime) {
+    const date = new Date(dateTime);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
 export function classList(...classes) {
     return classes.filter(Boolean).join(' ');
 }

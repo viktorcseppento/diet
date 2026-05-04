@@ -1,45 +1,47 @@
 import { Button } from '@kobalte/core/button';
-import { createMemo, For, Show } from 'solid-js';
+import { createMemo, createResource, For, Show } from 'solid-js';
 import ConfirmDialogContent from '../../components/ConfirmDialogContent';
 import { useDialogContext } from '../../context/DialogContext';
-import { useStore } from '../../context/StoreContext';
-import { addFoods, getMacros } from '../../utils/calculations';
+import { getFoodsByMeal, getMealsByPerson, removeMeal } from '../../data/mealRepository';
+import createLiveQuery from '../../hooks/createLiveQuery';
+import { getMacros, sumFoods, sumIngredients } from '../../utils/calculations';
 import { mesaureUnitToText } from '../../utils/enums';
 import { renderMacros } from '../../utils/renderUtils';
-import { classList } from '../../utils/utils';
+import { classList, timeStrFromDateTime } from '../../utils/utils';
 import MealForm from './MealForm';
 import styles from './MealsList.module.scss';
 
-export default function MealsList({ personIdx, dayStr }) {
+export default function MealsList(props) {
     const { setDialogData } = useDialogContext();
-    const { people, removeMeal } = useStore();
+    const meals = createLiveQuery(() => getMealsByPerson(props.person()?.id), props.person);
 
-    const meals = createMemo(() => {
-        const person = people[personIdx()];
-        if (!person) return [];
-
-        return person.dates[dayStr()] || [];
-    });
-
-    const sortedMeals = createMemo(() => meals()
-        .map((meal, idx) => ({ meal, idx }))
-        .sort((a, b) => a.meal.time.localeCompare(b.meal.time)));
+    const sortedMeals = createMemo(() => [...meals()].sort((m1, m2) => m2.timestamp - m1.timestamp));
+    const [mealsWithFoodsAndMacros] = createResource(sortedMeals, async sortedMeals => {
+        return await Promise.all(sortedMeals.map(async meal => {
+            const foods = await getFoodsByMeal(meal.id);
+            return ({
+                ...meal,
+                foods,
+                macros: sumIngredients(foods)
+            });
+        }));
+    }, { initialValue: [] });
 
     return (
         <div class={styles.container}>
             <div class={styles.dayMacros}>
-                {renderMacros(addFoods(...meals()))}
+                {renderMacros(sumFoods(...mealsWithFoodsAndMacros().map(m => m.macros)))}
             </div>
             <Button
-                disabled={personIdx() == null}
+                disabled={!props.person}
                 class={styles.newMealButton}
                 onClick={() => setDialogData(() => ({
                     isOpen: true,
                     title: 'Új étkezés',
                     content: () => (
                         <MealForm
-                            personIdx={personIdx}
-                            dayStr={dayStr}
+                            personId={props.person().id}
+                            day={props.day}
                         />
                     )
                 }))}
@@ -47,11 +49,11 @@ export default function MealsList({ personIdx, dayStr }) {
                 <i class={`fa-solid fa-plus`} />Új étkezés
             </Button>
             <div class={styles.mealsList}>
-                <For each={sortedMeals()}>
-                    {mealWithIdx => (
+                <For each={mealsWithFoodsAndMacros()}>
+                    {meal => (
                         <div class={styles.meal}>
                             <div class={styles.mealHeader}>
-                                <div class={styles.mealTime}>{mealWithIdx.meal.time}</div>
+                                <div class={styles.mealTime}>{timeStrFromDateTime(meal.date)}</div>
                                 <div class={styles.itemButtons}>
                                     <Button
                                         class={styles.itemButton}
@@ -60,10 +62,9 @@ export default function MealsList({ personIdx, dayStr }) {
                                             title: 'Étkezés szerkesztése',
                                             content: () => (
                                                 <MealForm
-                                                    initialData={mealWithIdx.meal}
-                                                    personIdx={personIdx}
-                                                    dayStr={dayStr}
-                                                    mealIdx={() => mealWithIdx.idx}
+                                                    initialData={meal}
+                                                    personId={props.person().id}
+                                                    day={props.day}
                                                 />
                                             )
                                         }))}
@@ -78,9 +79,7 @@ export default function MealsList({ personIdx, dayStr }) {
                                             content: () => (
                                                 <ConfirmDialogContent
                                                     text="Biztosan törölni szeretnéd ezt az étkezést?"
-                                                    onConfirm={() => {
-                                                        return removeMeal(personIdx(), dayStr(), mealWithIdx.idx);
-                                                    }}
+                                                    onConfirm={() => removeMeal(meal.id)}
                                                 />
                                             )
                                         }))}
@@ -91,19 +90,19 @@ export default function MealsList({ personIdx, dayStr }) {
                             </div>
                             <div class={styles.mealContent}>
                                 <div class={styles.mealMacros}>
-                                    {renderMacros(mealWithIdx.meal)}
+                                    {renderMacros(meal.macros)}
                                 </div>
-                                <Show when={mealWithIdx.meal.comment}>
+                                <Show when={meal.comment}>
                                     <div class={styles.comment}>
-                                        {`Megjegyzés: ${mealWithIdx.meal.comment}`}
+                                        {`Megjegyzés: ${meal.comment}`}
                                     </div>
                                 </Show>
                                 <div class={styles.foodsList}>
-                                    <For each={mealWithIdx.meal.foods}>{foodItem => (
+                                    <For each={meal.foods}>{foodItem => (
                                         <div class={styles.food}>
                                             <span class={styles.foodTitle}>{`${foodItem.food.name} - ${foodItem.amount} ${mesaureUnitToText(foodItem.food.measure)}`}</span>
                                             <div class={styles.foodMacros}>
-                                                {renderMacros(getMacros(foodItem.food, foodItem.amount, foodItem.food.measure))}
+                                                {renderMacros(getMacros(foodItem.food.macros, foodItem.amount, foodItem.food.measure))}
                                             </div>
                                         </div>
                                     )}</For>
@@ -112,7 +111,7 @@ export default function MealsList({ personIdx, dayStr }) {
                         </div>
                     )}
                 </For>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }

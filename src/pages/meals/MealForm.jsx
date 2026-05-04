@@ -1,29 +1,31 @@
-import { createStore, unwrap } from 'solid-js/store';
-import { useStore } from '../../context/StoreContext';
-import styles from './MealForm.module.scss';
-import appStyles from '~/App.module.scss';
-import { createMemo, Show } from 'solid-js';
-import { useDialogContext } from '../../context/DialogContext';
 import { Button } from '@kobalte/core/button';
 import { Popover } from '@kobalte/core/popover';
-import TimePicker from '../../components/TimePicker';
+import { createEffect, createMemo, Show } from 'solid-js';
+import { createStore } from 'solid-js/store';
+import appStyles from '~/App.module.scss';
 import Dropdown from '../../components/Dropdown';
+import TimePicker from '../../components/TimePicker';
+import { useDialogContext } from '../../context/DialogContext';
+import { getFoods } from '../../data/foodRepository';
+import { addMeal, editMeal } from '../../data/mealRepository';
+import createLiveQuery from '../../hooks/createLiveQuery';
+import { sumIngredients } from '../../utils/calculations';
+import { MEASURE_UNITS } from '../../utils/enums';
 import { renderMacros } from '../../utils/renderUtils';
-import { addIngredients } from '../../utils/calculations';
+import { timeStrFromDateTime } from '../../utils/utils';
+import styles from './MealForm.module.scss';
 
-// props: { initialData, personIdx, dayStr, mealIdx }
+// props: { initialData, day, personId }
 export default function MealForm(props) {
-    const { foods, addMeal, editMeal } = useStore();
+    const foods = createLiveQuery(getFoods);
     const { setDialogOpen } = useDialogContext();
 
-    const initialData = props.initialData ? structuredClone(unwrap(props.initialData)) : null;
-
     const [formData, setFormData] = createStore(
-        initialData ? {
-            hour: initialData.time.split(':')[0],
-            minute: initialData.time.split(':')[1],
-            foods: initialData.foods,
-            comment: initialData.comment
+        props.initialData ? {
+            hour: timeStrFromDateTime(props.initialData.date).split(':')[0],
+            minute: timeStrFromDateTime(props.initialData.date).split(':')[1],
+            foods: props.initialData.foods,
+            comment: props.initialData.comment
         } : {
             hour: new Date().getHours().toString().padStart(2, '0'),
             minute: new Date().getMinutes().toString().padStart(2, '0'),
@@ -31,7 +33,11 @@ export default function MealForm(props) {
             comment: null
         });
 
-    const [foodTexts, setFoodTexts] = createStore(initialData ? initialData.foods.map(f => `${f.food.name} - ${f.food.measure.label}`) : []);
+    const [foodTexts, setFoodTexts] = createStore([]);
+
+    createEffect(() => {
+        setFoodTexts(props.initialData ? props.initialData.foods.map(f => `${f.food.name} - ${MEASURE_UNITS.find(m => m.key === f.food.measure).label}`) : []);
+    });
 
     const setFormDataTime = (hour, minute) => {
         setFormData('hour', hour);
@@ -43,33 +49,38 @@ export default function MealForm(props) {
         && formData.foods.every(f => f.food && f.amount && f.amount > 0)
     );
 
-    const macros = createMemo((macros) => {
-        if (valid)
-            return addIngredients(formData.foods.filter(i => (i.food && i.amount)));
+    const dateFromTimeStr = function (hourStr, minuteStr) {
+        const hour = parseInt(hourStr);
+        const minute = parseInt(minuteStr);
+        const date = new Date(props.day().year, props.day().month, props.day().day, hour, minute);
+        return date.getTime();
+    }
+
+    const macros = createMemo(() => {
+        if (valid())
+            return sumIngredients(formData.foods.filter(i => (i.food && i.amount)));
         else
-            return macros;
+            return {};
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (initialData) {
-            editMeal(props.personIdx(), props.dayStr(), props.mealIdx(), {
-                time: `${formData.hour}:${formData.minute}`,
-                foods: formData.foods.map(i => ({ food: i.food, amount: i.amount })),
-                ...macros(),
+        if (props.initialData) {
+            await editMeal(props.initialData.id, {
+                date: dateFromTimeStr(formData.hour, formData.minute),
+                foods: formData.foods.map(i => ({ foodId: i.food.id, amount: i.amount })),
                 comment: formData.comment || null
             });
             setDialogOpen(false);
             return;
         }
-        addMeal(props.personIdx(), props.dayStr(), {
-            time: `${formData.hour}:${formData.minute}`,
-            foods: formData.foods.map(i => ({ food: i.food, amount: i.amount })),
-            ...macros(),
+        await addMeal({
+            personId: props.personId,
+            date: dateFromTimeStr(formData.hour, formData.minute),
+            foods: formData.foods.map(i => ({ foodId: i.food.id, amount: i.amount })),
             comment: formData.comment || null
         });
-
         setDialogOpen(false);
     };
 
@@ -97,7 +108,7 @@ export default function MealForm(props) {
                 <Button
                     class={styles.foodButton}
                     onClick={() => {
-                        setFormData('foods', [...formData.foods, { food: null, listIdx: null, amount: null }]);
+                        setFormData('foods', [...formData.foods, { food: null, amount: null }]);
                         setFoodTexts([...foodTexts, '']);
                     }}
                 >
@@ -128,18 +139,21 @@ export default function MealForm(props) {
                                     </Popover.Trigger>
                                     <Popover.Content class={styles.popover}>
                                         <Dropdown
-                                            items={foods.map(f => (`${f.name} - ${f.measure.label}`))}
+                                            items={foods().map(f => ({
+                                                id: f.id,
+                                                name: `${f.name} - ${MEASURE_UNITS.find(m => m.key === f.measure).label}`
+                                            }))}
                                             searchText={foodTexts[idx()]}
-                                            selectedIdx={food.listIdx}
-                                            disabledIdxs={[...formData.foods.map(i => i.listIdx).filter(i => i != null && i !== food.listIdx), props.idx?.()]}
-                                            onSelect={(selectedIdx) => {
-                                                const food = foods[selectedIdx];
+                                            selectedId={food.id}
+                                            disabledIds={[...formData.foods.map(f => f.food?.id).filter(foodId => foodId !== food.id), props.initialData?.id]}
+                                            onSelect={(selectedId) => {
+                                                const food = foods().find(f => f.id === selectedId);
                                                 setFormData('foods', [
                                                     ...formData.foods.slice(0, idx()),
-                                                    { food: food, listIdx: selectedIdx, amount: null },
+                                                    { food: food, amount: null },
                                                     ...formData.foods.slice(idx() + 1)
                                                 ]);
-                                                setFoodTexts(idx(), `${food.name} - ${food.measure.label}`);
+                                                setFoodTexts(idx(), `${food.name} - ${MEASURE_UNITS.find(m => m.key === food.measure).label}`);
                                             }}
                                         />
                                     </Popover.Content>
@@ -166,7 +180,7 @@ export default function MealForm(props) {
                                     id={`amount ${idx()}`}
                                     type="number"
                                     min={0}
-                                    step="0.01"
+                                    step="0.001"
                                     value={food.amount}
                                     onInput={(e) => setFormData('foods', idx(), 'amount', parseFloat(e.currentTarget.value || 0))}
                                 />

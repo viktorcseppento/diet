@@ -1,33 +1,35 @@
-import styles from './FoodList.module.scss';
-import appStyles from '~/App.module.scss';
-import NewFoodDialog from './NewFoodDialog';
-import { useStore } from '../../context/StoreContext';
 import { Button } from '@kobalte/core/button';
-import { useDialogContext } from '../../context/DialogContext';
-import ConfirmDialogContent from '../../components/ConfirmDialogContent';
-import BasicFoodForm from './BasicFoodForm';
-import { classList } from '../../utils/utils';
-import { FOOD_TYPES } from '../../utils/enums';
-import CompositeFoodForm from './CompositeFoodForm';
 import { createSignal, For } from 'solid-js';
-import { renderMacros } from '../../utils/renderUtils';
+import appStyles from '~/App.module.scss';
+import ConfirmDialogContent from '../../components/ConfirmDialogContent';
 import SearchBox from '../../components/SearchBox';
+import { useDialogContext } from '../../context/DialogContext';
+import { getFoods, removeFood } from '../../data/foodRepository';
+import createLiveQuery from '../../hooks/createLiveQuery';
+import { measureUnitToLabel } from '../../utils/enums';
+import { renderMacros } from '../../utils/renderUtils';
+import { classList } from '../../utils/utils';
+import BasicFoodForm from './BasicFoodForm';
+import CompositeFoodForm from './CompositeFoodForm';
+import styles from './FoodList.module.scss';
+import NewFoodDialog from './NewFoodDialog';
 
 export default function FoodList() {
-    const { foods, removeFood } = useStore();
+    const foods = createLiveQuery(getFoods);
+
     const { setDialogData } = useDialogContext();
     const [search, setSearch] = createSignal('');
 
-    const getFormComponent = (typeKey, food, idx) => {
-        if (typeKey === 'BASIC') return BasicFoodForm({ initialData: food, idx });
-        if (typeKey === 'COMPOSITE') return CompositeFoodForm({ initialData: food, idx });
+    const getFormComponent = (type, food) => {
+        if (type === 'BASIC') return () => <BasicFoodForm initialData={food} />;
+        if (type === 'COMPOSITE') return () => <CompositeFoodForm initialData={food} />;
         return null;
     };
 
-    const renderFoodItem = (food, idx, typeKey) => (
+    const renderFoodItem = (food, type) => (
         <div class={styles.item}>
             <div class={styles.itemHeader}>
-                <span class={styles.name}>{`${food.name} - ${food.measure.label}`}</span>
+                <span class={styles.name}>{`${food.name} - ${measureUnitToLabel(food.measure)}`}</span>
                 <span class={styles.itemButtons}>
                     <Button
                         class={styles.itemButton}
@@ -35,7 +37,7 @@ export default function FoodList() {
                             setDialogData(() => ({
                                 isOpen: true,
                                 title: `Étel módosítása`,
-                                content: () => getFormComponent(typeKey, food, idx)
+                                content: getFormComponent(type, food)
                             }));
                         }}
                     >
@@ -50,7 +52,7 @@ export default function FoodList() {
                                 content: () => (
                                     <ConfirmDialogContent
                                         text={`Biztosan törli a(z) <i><b>${food.name}</b></i> ételt?`}
-                                        onConfirm={() => removeFood(idx())}
+                                        onConfirm={async () => await removeFood(food.id)}
                                     />
                                 )
                             }));
@@ -61,32 +63,20 @@ export default function FoodList() {
                 </span>
             </div>
             <div class={styles.description}>
-                {renderMacros(food)}
+                {renderMacros(food.macros)}
             </div>
         </div>
     );
 
     const column = (type) => {
-        const filteredFoods = foods.map((food, idx) => ({ food, idx: () => idx }))
-            .filter(({ food }) => {
-                if (food.type.id !== type.id)
-                    return false;
-                switch (type.key) {
-                    case 'BASIC':
-                        return food.name.toLowerCase().includes(search().toLowerCase());
-                    case 'COMPOSITE':
-                        return food.name.toLowerCase().includes(search().toLowerCase()) ||
-                            food.ingredients.some(i => i.food.name.toLowerCase().includes(search().toLowerCase()));
-                    default:
-                        return false;
-                }
-            });
+        const filteredFoods = foods()
+            .filter(food => food.type === type && food.name.toLowerCase().includes(search().toLowerCase()));
 
         return (
             <div class={styles.column}>
-                <span class={styles.listHeader}>{type.key === 'BASIC' ? 'Alap' : 'Összetett'}</span>
+                <span class={styles.listHeader}>{type === 'BASIC' ? 'Alap' : 'Összetett'}</span>
                 <div class={styles.list}>
-                    <For each={filteredFoods}>{({ food, idx }) => renderFoodItem(food, idx, type.key)}</For>
+                    <For each={filteredFoods}>{food => renderFoodItem(food, type)}</For>
                 </div>
             </div>
         );
@@ -108,8 +98,8 @@ export default function FoodList() {
                 <SearchBox value={search} setValue={setSearch} />
             </div>
             <div class={styles.listContainer}>
-                {column(FOOD_TYPES[0])}
-                {column(FOOD_TYPES[1])}
+                {column('BASIC')}
+                {column('COMPOSITE')}
             </div>
         </div>
     );

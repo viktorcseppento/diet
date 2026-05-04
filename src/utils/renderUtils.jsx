@@ -1,11 +1,11 @@
 import { calculateCalories } from "./calculations";
 import { formatNumber } from "./utils";
 
-export function renderMacros(food) {
+export function renderMacros(macros) {
     return <>
-        <span>{`Energia: ${formatNumber(calculateCalories(food))} kcal`}</span>
-        <span>{`Zsír: ${formatNumber(food.fat)} g (telített: ${formatNumber(food.fatSaturated)} g)`}</span>
-        <span>{`Szénhidrát: ${formatNumber(food.fastCarbohydrates + food.slowCarbohydrates)} g (gyors: ${formatNumber(food.fastCarbohydrates)} g - lassú: ${formatNumber(food.slowCarbohydrates)} g - rost: ${formatNumber(food.fiber)} g)`}</span>
-        <span>{`Fehérje: ${formatNumber(food.protein)} g`}</span>
+        <span>{`Energia: ${formatNumber(calculateCalories(macros))} kcal`}</span>
+        <span>{`Zsír: ${formatNumber(macros.fat)} g (telített: ${formatNumber(macros.fatSaturated)} g)`}</span>
+        <span>{`Szénhidrát: ${formatNumber(macros.fastCarbohydrates + macros.slowCarbohydrates)} g (gyors: ${formatNumber(macros.fastCarbohydrates)} g - lassú: ${formatNumber(macros.slowCarbohydrates)} g - rost: ${formatNumber(macros.fiber)} g)`}</span>
+        <span>{`Fehérje: ${formatNumber(macros.protein)} g`}</span>
     </>;
 }

@@ -1,28 +1,25 @@
-import styles from './BasicFoodForm.module.scss';
-import appStyles from '~/App.module.scss';
-import { FOOD_TYPES, MEASURE_UNITS } from '../../utils/enums';
-import { createStore, unwrap } from 'solid-js/store';
-import { createMemo } from 'solid-js';
 import { Button } from '@kobalte/core/button';
-import { useStore } from '../../context/StoreContext';
+import { createMemo } from 'solid-js';
+import { createStore } from 'solid-js/store';
+import appStyles from '~/App.module.scss';
 import { useDialogContext } from '../../context/DialogContext';
+import { addFood, editFood } from '../../data/foodRepository';
+import { MEASURE_UNITS } from '../../utils/enums';
+import styles from './BasicFoodForm.module.scss';
 
 export default function BasicFoodForm(props) {
-    const { addFood, editFood } = useStore();
     const { setDialogOpen } = useDialogContext();
 
-    const initialData = props.initialData ? structuredClone(unwrap(props.initialData)) : null;
-
     const [formData, setFormData] = createStore(
-        initialData ? {
-            name: initialData.name,
-            measure: initialData.measure,
-            fat: initialData.fat,
-            fatSaturated: initialData.fatSaturated,
-            carbohydrates: initialData.fastCarbohydrates + initialData.slowCarbohydrates,
-            fiber: initialData.fiber,
-            slowAbsorption: initialData.slowCarbohydrates > 0,
-            protein: initialData.protein
+        props.initialData ? {
+            name: props.initialData.name,
+            measure: { ...MEASURE_UNITS.find(m => m.key === props.initialData.measure) },
+            fat: props.initialData.macros.fat,
+            fatSaturated: props.initialData.macros.fatSaturated,
+            carbohydrates: props.initialData.macros.fastCarbohydrates + props.initialData.macros.slowCarbohydrates,
+            fiber: props.initialData.macros.fiber,
+            slowAbsorption: props.initialData.macros.slowCarbohydrates > 0,
+            protein: props.initialData.macros.protein
         } : {
             name: '',
             measure: { ...MEASURE_UNITS[0] },
@@ -43,33 +40,37 @@ export default function BasicFoodForm(props) {
             formData.protein != null && formData.protein >= 0;
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (initialData) {
-            editFood(props.idx(), {
-                type: FOOD_TYPES.find(t => t.key === 'BASIC'),
-                name: formData.name,
-                measure: formData.measure,
+        if (props.initialData) {
+            await editFood(props.initialData.id, {
+                name: formData.name.trim(),
+                type: 'BASIC',
+                measure: formData.measure.key,
+                macros: {
+                    fat: formData.fat,
+                    fatSaturated: formData.fatSaturated,
+                    fastCarbohydrates: !formData.slowAbsorption ? formData.carbohydrates : 0,
+                    slowCarbohydrates: formData.slowAbsorption ? formData.carbohydrates : 0,
+                    fiber: formData.fiber,
+                    protein: formData.protein
+                }
+            });
+            setDialogOpen(false);
+            return;
+        }
+        await addFood({
+            name: formData.name.trim(),
+            type: 'BASIC',
+            measure: formData.measure.key,
+            macros: {
                 fat: formData.fat,
                 fatSaturated: formData.fatSaturated,
                 fastCarbohydrates: !formData.slowAbsorption ? formData.carbohydrates : 0,
                 slowCarbohydrates: formData.slowAbsorption ? formData.carbohydrates : 0,
                 fiber: formData.fiber,
                 protein: formData.protein
-            });
-            setDialogOpen(false);
-            return;
-        }
-        addFood({
-            type: FOOD_TYPES.find(t => t.key === 'BASIC'),
-            name: formData.name,
-            measure: formData.measure,
-            fat: formData.fat,
-            fatSaturated: formData.fatSaturated,
-            fastCarbohydrates: !formData.slowAbsorption ? formData.carbohydrates : 0,
-            slowCarbohydrates: formData.slowAbsorption ? formData.carbohydrates : 0,
-            fiber: formData.fiber,
-            protein: formData.protein
+            }
         });
 
         setDialogOpen(false);
@@ -107,7 +108,7 @@ export default function BasicFoodForm(props) {
                         class={appStyles.smallInput}
                         id='fat'
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min={0}
                         value={formData.fat}
                         onInput={(e) => setFormData('fat', parseFloat(e.currentTarget.value || 0))}
@@ -119,7 +120,7 @@ export default function BasicFoodForm(props) {
                         class={styles.smallInput}
                         id='fatSaturated'
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min={0}
                         value={formData.fatSaturated}
                         onInput={(e) => setFormData('fatSaturated', parseFloat(e.currentTarget.value || 0))}
@@ -133,7 +134,7 @@ export default function BasicFoodForm(props) {
                         class={appStyles.smallInput}
                         id='carbohydrates'
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min={0}
                         value={formData.carbohydrates}
                         onInput={(e) => setFormData('carbohydrates', parseFloat(e.currentTarget.value || 0))}
@@ -145,7 +146,7 @@ export default function BasicFoodForm(props) {
                         class={appStyles.smallInput}
                         id='fiber'
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min={0}
                         value={formData.fiber}
                         onInput={(e) => setFormData('fiber', parseFloat(e.currentTarget.value || 0))}
@@ -168,7 +169,7 @@ export default function BasicFoodForm(props) {
                     type="number"
                     class={appStyles.smallInput}
                     id='protein'
-                    step="0.01"
+                    step="0.001"
                     min={0}
                     value={formData.protein}
                     onInput={(e) => setFormData('protein', parseFloat(e.currentTarget.value || 0))}

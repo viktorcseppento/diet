@@ -1,19 +1,19 @@
-export function calculateCalories(food) {
-    return food.fat * 9 + (food.fastCarbohydrates + food.slowCarbohydrates - food.fiber) * 4 + food.protein * 4;
+export function calculateCalories(macros) {
+    return macros.fat * 9 + (macros.fastCarbohydrates + macros.slowCarbohydrates - macros.fiber) * 4 + macros.protein * 4;
 }
 
-export function multiplyFood(food, factor) {
+export function multiplyFood(macros, factor) {
     return {
-        fat: food.fat * factor,
-        fatSaturated: food.fatSaturated * factor,
-        fastCarbohydrates: food.fastCarbohydrates * factor,
-        slowCarbohydrates: food.slowCarbohydrates * factor,
-        fiber: food.fiber * factor,
-        protein: food.protein * factor
+        fat: macros.fat * factor,
+        fatSaturated: macros.fatSaturated * factor,
+        fastCarbohydrates: macros.fastCarbohydrates * factor,
+        slowCarbohydrates: macros.slowCarbohydrates * factor,
+        fiber: macros.fiber * factor,
+        protein: macros.protein * factor
     };
 }
 
-export function addFoods(...foods) {
+export function sumFoods(...foods) {
     return foods.reduce((acc, food) => ({
         fat: acc.fat + food.fat,
         fatSaturated: acc.fatSaturated + food.fatSaturated,
@@ -31,17 +31,17 @@ export function addFoods(...foods) {
     });
 }
 
-// ingredients: { food: { name, measure, fat, ..., }, amount }
-export function addIngredients(ingredients) {
+// ingredients: { food: { name, measure, macros: { fat, ..., } }, amount }
+export function sumIngredients(ingredients) {
     return ingredients.reduce((acc, ingredient) => {
         const amountMultiple = getAmountMultiple(ingredient.food.measure, ingredient.amount);
         return ({
-            fat: acc.fat + ingredient.food.fat * amountMultiple,
-            fatSaturated: acc.fatSaturated + ingredient.food.fatSaturated * amountMultiple,
-            fastCarbohydrates: acc.fastCarbohydrates + ingredient.food.fastCarbohydrates * amountMultiple,
-            slowCarbohydrates: acc.slowCarbohydrates + ingredient.food.slowCarbohydrates * amountMultiple,
-            fiber: acc.fiber + ingredient.food.fiber * amountMultiple,
-            protein: acc.protein + ingredient.food.protein * amountMultiple
+            fat: acc.fat + ingredient.food.macros.fat * amountMultiple,
+            fatSaturated: acc.fatSaturated + ingredient.food.macros.fatSaturated * amountMultiple,
+            fastCarbohydrates: acc.fastCarbohydrates + ingredient.food.macros.fastCarbohydrates * amountMultiple,
+            slowCarbohydrates: acc.slowCarbohydrates + ingredient.food.macros.slowCarbohydrates * amountMultiple,
+            fiber: acc.fiber + ingredient.food.macros.fiber * amountMultiple,
+            protein: acc.protein + ingredient.food.macros.protein * amountMultiple
         });
     }, {
         fat: 0,
@@ -54,7 +54,7 @@ export function addIngredients(ingredients) {
 }
 
 export function getAmount(measureUnit, amountMultiple) {
-    switch (measureUnit.key) {
+    switch (measureUnit) {
         case 'HUNDRED_GRAMS':
             return 100 * amountMultiple;
         case 'PORTION':
@@ -65,7 +65,7 @@ export function getAmount(measureUnit, amountMultiple) {
 }
 
 export function getAmountMultiple(measureUnit, amount) {
-    switch (measureUnit.key) {
+    switch (measureUnit) {
         case 'HUNDRED_GRAMS':
             return amount / 100;
         case 'PORTION':

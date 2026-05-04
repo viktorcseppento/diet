@@ -1,12 +1,11 @@
 import { createStore } from 'solid-js/store';
 import { useDialogContext } from '../../context/DialogContext';
-import { useStore } from '../../context/StoreContext';
 import appStyles from '~/App.module.scss';
 import { createMemo } from 'solid-js';
 import { Button } from '@kobalte/core/button';
+import { addPerson, editPerson } from '../../data/personRepository';
 
 export default function PersonForm(props) {
-    const { addPerson, editPerson } = useStore();
     const { setDialogOpen } = useDialogContext();
 
     const [formData, setFormData] = createStore({
@@ -15,18 +14,16 @@ export default function PersonForm(props) {
 
     const valid = createMemo(() => formData.name.trim().length > 0);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (props.initialData) {
-            editPerson(props.idx(), {
-                name: formData.name,
-                dates: props.initialData.dates
+            await editPerson(props.initialData.id, {
+                name: formData.name
             });
         } else {
-            addPerson({
+            await addPerson({
                 name: formData.name,
-                dates: {}
             });
         }
 

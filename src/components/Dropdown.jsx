@@ -3,14 +3,15 @@ import styles from './Dropdown.module.scss';
 import { Button } from '@kobalte/core/button';
 import { classList } from '../utils/utils';
 
+// props.items are { id, name }
 export default function Dropdown(props) {
 
     const [filteredItems, setFilteredItems] = createSignal(props.items);
 
     createEffect(() => {
         const search = props.searchText?.toLowerCase();
-        const itemsWithIdx = props.items.map((item, idx) => ({ item, idx }));
-        setFilteredItems(itemsWithIdx.filter(({ item }) => item.toLowerCase().includes(search)));
+        
+        setFilteredItems(props.items.filter(item => item.name.toLowerCase().includes(search)));
     });
 
     return (
@@ -19,12 +20,12 @@ export default function Dropdown(props) {
                 <Button
                     class={classList(
                         styles.item,
-                        props.selectedIdx === item.idx ? styles.selected : ''
+                        props.selectedId === item.id ? styles.selected : ''
                     )}
-                    disabled={props.disabledIdxs?.some(disabledIdx => disabledIdx === item.idx)}
-                    onClick={() => props.onSelect(item.idx)}
+                    disabled={props.disabledIds?.some(disabledId => disabledId === item.id)}
+                    onClick={() => props.onSelect(item.id)}
                 >
-                    {item.item}
+                    {item.name}
                 </Button>
             )}
             </For>

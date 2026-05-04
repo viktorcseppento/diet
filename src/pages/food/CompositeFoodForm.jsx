@@ -1,76 +1,88 @@
-import styles from './CompositeFoodForm.module.scss';
-import appStyles from '~/App.module.scss';
-import { FOOD_TYPES, MEASURE_UNITS } from '../../utils/enums';
-import { createStore, unwrap } from 'solid-js/store';
-import { createEffect, createMemo, For, Match, Show, Switch } from 'solid-js';
 import { Button } from '@kobalte/core/button';
-import { useStore } from '../../context/StoreContext';
-import { useDialogContext } from '../../context/DialogContext';
-import { addIngredients, getAmountMultiple, multiplyFood } from '../../utils/calculations';
-import { renderMacros } from '../../utils/renderUtils';
 import { Popover } from '@kobalte/core/popover';
+import { createEffect, createMemo, For, Match, Show, Switch } from 'solid-js';
+import { createStore } from 'solid-js/store';
+import appStyles from '~/App.module.scss';
 import Dropdown from '../../components/Dropdown';
+import { useDialogContext } from '../../context/DialogContext';
+import { addFood, editFood, getFoods, getIngredients } from '../../data/foodRepository';
+import createLiveQuery from '../../hooks/createLiveQuery';
+import { getAmountMultiple, multiplyFood, sumIngredients } from '../../utils/calculations';
+import { MEASURE_UNITS } from '../../utils/enums';
+import { renderMacros } from '../../utils/renderUtils';
+import styles from './CompositeFoodForm.module.scss';
 
 export default function CompositeFoodForm(props) {
-    const { foods, addFood, editFood } = useStore();
+    const foods = createLiveQuery(getFoods);
+    const ingredients = createLiveQuery(() => getIngredients(props.initialData?.id));
     const { setDialogOpen } = useDialogContext();
 
-    const initialData = props.initialData ? structuredClone(unwrap(props.initialData)) : null;
-
     const [formData, setFormData] = createStore(
-        initialData ? initialData : {
+        props.initialData ? {
+            name: props.initialData.name,
+            ingredients: [],
+            measure: { ...MEASURE_UNITS.find(m => m.key === props.initialData.measure) },
+            amount: props.initialData.amount
+        } : {
             name: '',
             ingredients: [],
             measure: { ...MEASURE_UNITS[0] },
             amount: null
         });
 
-    const [ingredientTexts, setIngredientTexts] = createStore(initialData ? initialData.ingredients.map(i => `${i.food.name} - ${i.food.measure.label}`) : []);
+    const [ingredientTexts, setIngredientTexts] = createStore([]);
+
+    createEffect(() => {
+        setFormData('ingredients', ingredients());
+        setIngredientTexts(ingredients().map(i => `${i.food.name} - ${MEASURE_UNITS.find(m => m.key === i.food.measure).label}`));
+    });
+
+    const ingredientsValid = createMemo(() =>
+        formData.ingredients.length > 0 && formData.ingredients.every(i => i.food && i.amount && i.amount > 0));
 
     const valid = createMemo(() => {
         return formData.name.trim().length > 0 &&
-            formData.ingredients.length > 0 &&
-            formData.ingredients.every(i => i.food && i.amount && i.amount > 0) &&
+            ingredientsValid() &&
             formData.amount != null && formData.amount > 0;
     });
 
-    const allMacros = createMemo((allMacros) => {
-        if (valid)
-            return addIngredients(formData.ingredients.filter(i => (i.food && i.amount)));
+    const allMacros = createMemo(() => {
+        if (ingredientsValid())
+            return sumIngredients(formData.ingredients.filter(i => (i.food && i.amount)));
         else
-            return allMacros;
+            return {};
     });
 
-    const macros = createMemo((macros) => {
-        if (valid) {
-            const amountMultiple = getAmountMultiple(formData.measure, formData.amount);
-            return { ...multiplyFood(allMacros(), 1 / amountMultiple) };
+    const macros = createMemo(() => {
+        if (ingredientsValid() && formData.amount > 0 && formData.measure) {
+            const amountMultiple = getAmountMultiple(formData.measure.key, formData.amount);
+            return multiplyFood(allMacros(), 1 / amountMultiple);
         }
         else
-            return macros;
+            return {};
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (initialData) {
-            editFood(props.idx(), {
-                type: FOOD_TYPES.find(t => t.key === 'COMPOSITE'),
-                name: formData.name,
-                measure: formData.measure,
+        if (props.initialData) {
+            await editFood(props.initialData.id, {
+                type: 'COMPOSITE',
+                name: formData.name.trim(),
+                measure: formData.measure.key,
                 amount: formData.amount,
-                ingredients: formData.ingredients.map(i => ({ food: i.food, amount: i.amount })),
-                ...macros()
+                ingredients: formData.ingredients.map(i => ({ foodId: i.food.id, amount: i.amount })),
+                macros: macros()
             });
             setDialogOpen(false);
             return;
         }
-        addFood({
-            type: FOOD_TYPES.find(t => t.key === 'COMPOSITE'),
-            name: formData.name,
-            measure: formData.measure,
+        await addFood({
+            type: 'COMPOSITE',
+            name: formData.name.trim(),
+            measure: formData.measure.key,
             amount: formData.amount,
-            ingredients: formData.ingredients.map(i => ({ food: i.food, amount: i.amount })),
-            ...macros()
+            ingredients: formData.ingredients.map(i => ({ foodId: i.food.id, amount: i.amount })),
+            macros: macros()
         });
         setDialogOpen(false);
     };
@@ -93,7 +105,7 @@ export default function CompositeFoodForm(props) {
                 <Button
                     class={styles.ingredientButton}
                     onClick={() => {
-                        setFormData('ingredients', [...formData.ingredients, { food: null, listIdx: null, amount: null }]);
+                        setFormData('ingredients', [...formData.ingredients, { food: null, amount: null }]);
                         setIngredientTexts([...ingredientTexts, '']);
                     }}
                 >
@@ -124,18 +136,21 @@ export default function CompositeFoodForm(props) {
                                     </Popover.Trigger>
                                     <Popover.Content class={styles.popover}>
                                         <Dropdown
-                                            items={foods.map(f => (`${f.name} - ${f.measure.label}`))}
+                                            items={foods().map(f => ({
+                                                id: f.id,
+                                                name: `${f.name} - ${MEASURE_UNITS.find(m => m.key === f.measure).label}`
+                                            }))}
                                             searchText={ingredientTexts[idx()]}
-                                            selectedIdx={ingredient.listIdx}
-                                            disabledIdxs={[...formData.ingredients.map(i => i.listIdx).filter(i => i != null && i !== ingredient.listIdx), props.idx?.()]}
-                                            onSelect={(selectedIdx) => {
-                                                const food = foods[selectedIdx];
+                                            selectedId={ingredient.food?.id}
+                                            disabledIds={[...formData.ingredients.map(i => i.food?.id).filter(i => i !== ingredient.id), props.initialData?.id]}
+                                            onSelect={(selectedId) => {
+                                                const food = foods().find(f => f.id === selectedId);
                                                 setFormData('ingredients', [
                                                     ...formData.ingredients.slice(0, idx()),
-                                                    { food: food, listIdx: selectedIdx, amount: null },
+                                                    { food: food, amount: null },
                                                     ...formData.ingredients.slice(idx() + 1)
                                                 ]);
-                                                setIngredientTexts(idx(), `${food.name} - ${food.measure.label}`);
+                                                setIngredientTexts(idx(), `${food.name} - ${MEASURE_UNITS.find(m => m.key === food.measure).label}`);
                                             }}
                                         />
                                     </Popover.Content>
@@ -153,8 +168,8 @@ export default function CompositeFoodForm(props) {
                             <div class={appStyles.formField}>
                                 <label htmlFor={`amount ${idx()}`}>
                                     <Switch>
-                                        <Match when={!formData.ingredients[idx()]?.food?.measure.key || formData.ingredients[idx()]?.food?.measure.key === 'HUNDRED_GRAMS'}>Tömeg (g):</Match>
-                                        <Match when={formData.ingredients[idx()]?.food?.measure.key === 'PORTION'}>Adagszám:</Match>
+                                        <Match when={!formData.ingredients[idx()]?.food?.measure || formData.ingredients[idx()]?.food?.measure === 'HUNDRED_GRAMS'}>Tömeg (g):</Match>
+                                        <Match when={formData.ingredients[idx()]?.food?.measure === 'PORTION'}>Adagszám:</Match>
                                     </Switch>
                                 </label>
                                 <input
@@ -162,7 +177,7 @@ export default function CompositeFoodForm(props) {
                                     id={`amount ${idx()}`}
                                     type="number"
                                     min={0}
-                                    step="0.01"
+                                    step="0.001"
                                     value={ingredient.amount}
                                     onInput={(e) => setFormData('ingredients', idx(), 'amount', parseFloat(e.currentTarget.value || 0))}
                                 />
@@ -199,7 +214,7 @@ export default function CompositeFoodForm(props) {
                         class={appStyles.mediumInput}
                         id='fullAmount'
                         type="number"
-                        step="0.01"
+                        step="0.001"
                         min={0}
                         value={formData.amount}
                         onInput={(e) => setFormData('amount', parseFloat(e.currentTarget.value || 0))}
