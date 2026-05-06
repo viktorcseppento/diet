@@ -160,12 +160,13 @@ export default function Meals() {
                 <div class={styles.dayControl}>
                     <Button
                         class={classList(styles.iconButton, styles.dayChevronButton)}
+                        disabled={!selectedPerson()}
                         onClick={() => navigateDay(-1)}
                     >
                         <i class="fa-solid fa-chevron-left" />
                     </Button>
                     <Popover modal={false}>
-                        <Popover.Trigger class={styles.dayText}>
+                        <Popover.Trigger class={styles.dayText} disabled={!selectedPerson()}>
                             {selectedDay().year}. {translateMonth(selectedDay().month)}. {selectedDay().day}.
                         </Popover.Trigger>
                         <Popover.Content class={styles.popover}>
@@ -174,6 +175,7 @@ export default function Meals() {
                     </Popover>
                     <Button
                         class={classList(styles.iconButton, styles.dayChevronButton)}
+                        disabled={!selectedPerson()}
                         onClick={() => navigateDay(1)}
                     >
                         <i class="fa-solid fa-chevron-right" />

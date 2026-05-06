@@ -135,6 +135,11 @@
         color: $primary-color-hover;
     }
 
+    &:disabled {
+        color: gray !important;
+        background-color: transparent !important;
+    }
+
     transition: all 0.3s ease;
 }
 

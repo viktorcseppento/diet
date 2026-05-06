@@ -1,5 +1,4 @@
 import Dexie from "dexie";
-import { addFood, getFoods } from "./foodRepository";
 
 export const db = new Dexie('diet-db');
 
@@ -14,6 +13,8 @@ db.version(1).stores({
     meals: 'id, personId, date, createdAt, lastUpdated',
     // id: increment, operation: enum, recordId: UUID, data: any, createdAt: timestamp
     syncQueue: '++id, operation, recordId, createdAt',
-    // meta: id: increment, key: string (e.g lastSync), value: any
-    meta: '++id, key'
+    // id: increment, key: string (e.g lastSync), value: any
+    meta: '++id, key',
+    // id: 'app', stores only the settings object
+    settings: 'id'
 });

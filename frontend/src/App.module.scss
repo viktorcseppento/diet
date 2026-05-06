@@ -9,7 +9,25 @@
     border-bottom: 1px solid $medium-border-color;
 }
 
+.settingsButton {
+    border: none;
+    background-color: transparent;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 8px;
+    height: 45px;
+    width: 45px;
+
+    color: $primary-color;
+
+    &:hover {
+        background-color: $primary-background-color-hover;
+        color: $primary-color-hover;
+    }
+}
+
 .tabsTrigger {
+    height: 45px;
     width: 100%;
     font-size: 22px;
     background-color: transparent;

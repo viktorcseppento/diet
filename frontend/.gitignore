@@ -26,3 +26,12 @@ gitignore
 # System Files
 .DS_Store
 Thumbs.db
+
+android/app/build/
+android/.gradle/
+android/build/
+
+*.jks
+*.keystore
+
+local.properties

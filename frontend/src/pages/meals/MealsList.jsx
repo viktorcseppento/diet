@@ -33,7 +33,7 @@ export default function MealsList(props) {
                 {renderMacros(sumFoods(...mealsWithFoodsAndMacros().map(m => m.macros)))}
             </div>
             <Button
-                disabled={!props.person}
+                disabled={!props.person()}
                 class={styles.newMealButton}
                 onClick={() => setDialogData(() => ({
                     isOpen: true,
