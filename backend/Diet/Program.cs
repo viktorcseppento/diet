@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DietDbContext>(options =>
-    options.UseSqlite("Data Source=app.db"));
+    options.UseSqlite("Data Source=diet.db"));
 
 builder.Services.AddControllers();
 

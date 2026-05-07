@@ -6,6 +6,18 @@ export async function getMealsByPerson(personId) {
     return await db.meals.where('personId').equals(personId).toArray();
 }
 
+export async function getMealsByPersonAndDay(personId, day) {
+    if (!personId || !day)
+        return [];
+    const rangeStart = new Date(day.year, day.month, day.day).getTime();
+    const rangeEnd = new Date(day.year, day.month, day.day + 1).getTime();
+
+    return await db.meals.where('personId').equals(personId).and(meal => {
+        const mealTime = new Date(meal.date).getTime();
+        return mealTime >= rangeStart && mealTime < rangeEnd;
+    }).toArray();
+}
+
 export async function getMealDatesByPerson(personId) {
     const meals = await db.meals.where('personId').equals(personId).toArray();
     const dates = [...new Set(meals.map(meal => {

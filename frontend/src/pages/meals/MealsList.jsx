@@ -2,7 +2,7 @@ import { Button } from '@kobalte/core/button';
 import { createMemo, createResource, For, Show } from 'solid-js';
 import ConfirmDialogContent from '../../components/ConfirmDialogContent';
 import { useDialogContext } from '../../context/DialogContext';
-import { getFoodsByMeal, getMealsByPerson, removeMeal } from '../../data/mealRepository';
+import { getFoodsByMeal, getMealsByPersonAndDay, removeMeal } from '../../data/mealRepository';
 import createLiveQuery from '../../hooks/createLiveQuery';
 import { getMacros, sumFoods, sumIngredients } from '../../utils/calculations';
 import { mesaureUnitToText } from '../../utils/enums';
@@ -13,7 +13,7 @@ import styles from './MealsList.module.scss';
 
 export default function MealsList(props) {
     const { setDialogData } = useDialogContext();
-    const meals = createLiveQuery(() => getMealsByPerson(props.person()?.id), props.person);
+    const meals = createLiveQuery(() => getMealsByPersonAndDay(props.person()?.id, props.day()), props.person, props.day);
 
     const sortedMeals = createMemo(() => [...meals()].sort((m1, m2) => m2.timestamp - m1.timestamp));
     const [mealsWithFoodsAndMacros] = createResource(sortedMeals, async sortedMeals => {
