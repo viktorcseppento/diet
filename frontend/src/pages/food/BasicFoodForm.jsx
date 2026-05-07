@@ -16,16 +16,16 @@ export default function BasicFoodForm(props) {
             measure: { ...MEASURE_UNITS.find(m => m.key === props.initialData.measure) },
             fat: props.initialData.macros.fat,
             fatSaturated: props.initialData.macros.fatSaturated,
-            carbohydrates: props.initialData.macros.fastCarbohydrates + props.initialData.macros.slowCarbohydrates,
+            carbohydrate: props.initialData.macros.fastCarbohydrate + props.initialData.macros.slowCarbohydrate,
             fiber: props.initialData.macros.fiber,
-            slowAbsorption: props.initialData.macros.slowCarbohydrates > 0,
+            slowAbsorption: props.initialData.macros.slowCarbohydrate > 0,
             protein: props.initialData.macros.protein
         } : {
             name: '',
             measure: { ...MEASURE_UNITS[0] },
             fat: 0,
             fatSaturated: 0,
-            carbohydrates: 0,
+            carbohydrate: 0,
             fiber: 0,
             slowAbsorption: false,
             protein: 0
@@ -35,7 +35,7 @@ export default function BasicFoodForm(props) {
         return formData.name.trim().length > 0 &&
             formData.fat != null && formData.fat >= 0 &&
             formData.fatSaturated != null && formData.fatSaturated >= 0 &&
-            formData.carbohydrates != null && formData.carbohydrates >= 0 &&
+            formData.carbohydrate != null && formData.carbohydrate >= 0 &&
             formData.fiber != null && formData.fiber >= 0 &&
             formData.protein != null && formData.protein >= 0;
     });
@@ -50,8 +50,8 @@ export default function BasicFoodForm(props) {
                 macros: {
                     fat: formData.fat,
                     fatSaturated: formData.fatSaturated,
-                    fastCarbohydrates: !formData.slowAbsorption ? formData.carbohydrates : 0,
-                    slowCarbohydrates: formData.slowAbsorption ? formData.carbohydrates : 0,
+                    fastCarbohydrate: !formData.slowAbsorption ? formData.carbohydrate : 0,
+                    slowCarbohydrate: formData.slowAbsorption ? formData.carbohydrate : 0,
                     fiber: formData.fiber,
                     protein: formData.protein
                 }
@@ -66,8 +66,8 @@ export default function BasicFoodForm(props) {
             macros: {
                 fat: formData.fat,
                 fatSaturated: formData.fatSaturated,
-                fastCarbohydrates: !formData.slowAbsorption ? formData.carbohydrates : 0,
-                slowCarbohydrates: formData.slowAbsorption ? formData.carbohydrates : 0,
+                fastCarbohydrate: !formData.slowAbsorption ? formData.carbohydrate : 0,
+                slowCarbohydrate: formData.slowAbsorption ? formData.carbohydrate : 0,
                 fiber: formData.fiber,
                 protein: formData.protein
             }
@@ -129,15 +129,15 @@ export default function BasicFoodForm(props) {
             </div>
             <div class={appStyles.formRow}>
                 <div class={appStyles.formField}>
-                    <label htmlFor='carbohydrates'>Szénhidrát (g):</label>
+                    <label htmlFor='carbohydrate'>Szénhidrát (g):</label>
                     <input
                         class={appStyles.smallInput}
-                        id='carbohydrates'
+                        id='carbohydrate'
                         type="number"
                         step="0.001"
                         min={0}
-                        value={formData.carbohydrates}
-                        onInput={(e) => setFormData('carbohydrates', parseFloat(e.currentTarget.value || 0))}
+                        value={formData.carbohydrate}
+                        onInput={(e) => setFormData('carbohydrate', parseFloat(e.currentTarget.value || 0))}
                     />
                 </div>
                 <div class={appStyles.formField}>

@@ -171,8 +171,8 @@ export default function MealForm(props) {
                             <div class={appStyles.formField}>
                                 <label htmlFor={`amount ${idx()}`}>
                                     <Switch>
-                                        <Match when={!formData.foods[idx()]?.food?.measure.key || formData.foods[idx()]?.food?.measure.key === 'HUNDRED_GRAMS'}>Tömeg (g):</Match>
-                                        <Match when={formData.foods[idx()]?.food?.measure.key === 'PORTION'}>Adagszám:</Match>
+                                        <Match when={!formData.foods[idx()]?.food?.measure || formData.foods[idx()]?.food?.measure === 'HUNDRED_GRAMS'}>Tömeg (g):</Match>
+                                        <Match when={formData.foods[idx()]?.food?.measure === 'PORTION'}>Adagszám:</Match>
                                     </Switch>
                                 </label>
                                 <input

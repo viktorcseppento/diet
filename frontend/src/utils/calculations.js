@@ -1,13 +1,13 @@
 export function calculateCalories(macros) {
-    return macros.fat * 9 + (macros.fastCarbohydrates + macros.slowCarbohydrates - macros.fiber) * 4 + macros.protein * 4;
+    return macros.fat * 9 + (macros.fastCarbohydrate + macros.slowCarbohydrate - macros.fiber) * 4 + macros.protein * 4;
 }
 
 export function multiplyFood(macros, factor) {
     return {
         fat: macros.fat * factor,
         fatSaturated: macros.fatSaturated * factor,
-        fastCarbohydrates: macros.fastCarbohydrates * factor,
-        slowCarbohydrates: macros.slowCarbohydrates * factor,
+        fastCarbohydrate: macros.fastCarbohydrate * factor,
+        slowCarbohydrate: macros.slowCarbohydrate * factor,
         fiber: macros.fiber * factor,
         protein: macros.protein * factor
     };
@@ -17,15 +17,15 @@ export function sumFoods(...foods) {
     return foods.reduce((acc, food) => ({
         fat: acc.fat + food.fat,
         fatSaturated: acc.fatSaturated + food.fatSaturated,
-        fastCarbohydrates: acc.fastCarbohydrates + food.fastCarbohydrates,
-        slowCarbohydrates: acc.slowCarbohydrates + food.slowCarbohydrates,
+        fastCarbohydrate: acc.fastCarbohydrate + food.fastCarbohydrate,
+        slowCarbohydrate: acc.slowCarbohydrate + food.slowCarbohydrate,
         fiber: acc.fiber + food.fiber,
         protein: acc.protein + food.protein
     }), {
         fat: 0,
         fatSaturated: 0,
-        fastCarbohydrates: 0,
-        slowCarbohydrates: 0,
+        fastCarbohydrate: 0,
+        slowCarbohydrate: 0,
         fiber: 0,
         protein: 0
     });
@@ -38,16 +38,16 @@ export function sumIngredients(ingredients) {
         return ({
             fat: acc.fat + ingredient.food.macros.fat * amountMultiple,
             fatSaturated: acc.fatSaturated + ingredient.food.macros.fatSaturated * amountMultiple,
-            fastCarbohydrates: acc.fastCarbohydrates + ingredient.food.macros.fastCarbohydrates * amountMultiple,
-            slowCarbohydrates: acc.slowCarbohydrates + ingredient.food.macros.slowCarbohydrates * amountMultiple,
+            fastCarbohydrate: acc.fastCarbohydrate + ingredient.food.macros.fastCarbohydrate * amountMultiple,
+            slowCarbohydrate: acc.slowCarbohydrate + ingredient.food.macros.slowCarbohydrate * amountMultiple,
             fiber: acc.fiber + ingredient.food.macros.fiber * amountMultiple,
             protein: acc.protein + ingredient.food.macros.protein * amountMultiple
         });
     }, {
         fat: 0,
         fatSaturated: 0,
-        fastCarbohydrates: 0,
-        slowCarbohydrates: 0,
+        fastCarbohydrate: 0,
+        slowCarbohydrate: 0,
         fiber: 0,
         protein: 0
     });
@@ -80,8 +80,8 @@ export function getMacros(food, amount, measureUnit) {
     return {
         fat: food.fat * amountMultiple,
         fatSaturated: food.fatSaturated * amountMultiple,
-        fastCarbohydrates: food.fastCarbohydrates * amountMultiple,
-        slowCarbohydrates: food.slowCarbohydrates * amountMultiple,
+        fastCarbohydrate: food.fastCarbohydrate * amountMultiple,
+        slowCarbohydrate: food.slowCarbohydrate * amountMultiple,
         fiber: food.fiber * amountMultiple,
         protein: food.protein * amountMultiple
     };
