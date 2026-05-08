@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "cap:sync": "npx cap sync",
     "cap:assets": "npx capacitor-assets generate",
-    "cap:prepare": "npm run build && npm run cap:assets && npm run cap:sync",
+    "cap:prepare": "npm run build && npm run cap:sync",
     "android:apk": "cd android && ./gradlew assembleDebug",
     "android:build": "npm run cap:prepare && npx cap build android && npm run android:apk"
   },
