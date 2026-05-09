@@ -1,3 +1,5 @@
+import { db } from "./db";
+
 export async function getSettings() {
     return await db.settings.get("app");
 }

@@ -79,7 +79,7 @@ export async function editMeal(id, meal) {
 }
 
 export async function removeMeal(id) {
-    await db.transaction('rw', db.foods, db.syncQueue, async (tx) => {
+    await db.transaction('rw', db.meals, db.syncQueue, async (tx) => {
         await db.meals.update(id, { deleted: 1, lastUpdated: Date.now() });
         const meal = await db.meals.get(id);
         await addSyncRecord(tx, meal.id, 'meals', meal)

@@ -19,9 +19,9 @@ public class SyncController(ISyncService syncService) : ControllerBase
     }
 
     [HttpGet("push")]
-    public ActionResult<PullResponse> Push([FromBody] [Required] PushRequest request)
+    public ActionResult Push([FromBody] [Required] PushRequest request)
     {
-        var response = syncService.PushChanges(request);
-        return Ok(response);
+        syncService.PushChanges(request);
+        return Ok();
     }
 }

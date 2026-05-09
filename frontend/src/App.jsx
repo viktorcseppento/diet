@@ -6,9 +6,17 @@ import Dialog from './components/Dialog';
 import Meals from './pages/meals/Meals';
 import { Button } from '@kobalte/core/button';
 import SettingsDialog from './pages/settings/SettingsDialog';
+import { startSyncScheduler } from './services/syncScheduler';
+import { onMount } from 'solid-js';
+import { initSettings } from './data/settingsRepository';
 
 export default function App() {
   const { setDialogData } = useDialogContext();
+
+  onMount(() => {
+    initSettings();
+    startSyncScheduler();
+  });
 
   return (
     <>
