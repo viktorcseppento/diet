@@ -5,4 +5,5 @@ namespace Diet.Business;
 public interface ISyncService
 {
     public Task<PullResponse> ListChanges(long since);
+    public Task PushChanges(PushRequest request);
 }

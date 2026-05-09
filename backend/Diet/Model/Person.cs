@@ -12,18 +12,9 @@ public class PersonEntity
 
 public class PersonDto
 {
-    public PersonDto(PersonEntity entity)
-    {
-        Id = entity.Id;
-        Name = entity.Name;
-        CreatedAt = entity.CreatedAt;
-        LastUpdated = entity.LastUpdated;
-        Deleted = entity.Deleted;
-    }
-    
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public long CreatedAt { get; set; }
-    public long LastUpdated { get; set; }
-    public int Deleted { get; set; }
+    public required Guid Id { get; set; }
+    public required string Name { get; set; }
+    public required long CreatedAt { get; set; }
+    public required long LastUpdated { get; set; }
+    public required int Deleted { get; set; }
 }
