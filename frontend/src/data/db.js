@@ -9,10 +9,11 @@ db.version(1).stores({
     // macros { fat, fatSaturated, fastCarbohydrate, slowCarbohydrate, fiber, protein }
     // deleted: number, createdAt: timestamp, lastUpdated: timestamp
     foods: 'id, name, type, deleted, createdAt, lastUpdated, [deleted+lastUpdated]',
-    // id: UUID, personId: UUID, date: timestamp, comment: string, foods: [{ foodId, amount }], createdAt: timestamp, lastUpdated: timestamp
-    meals: 'id, personId, date, createdAt, lastUpdated',
-    // id: increment, operation: enum, recordId: UUID, data: any, createdAt: timestamp
-    syncQueue: '++id, operation, recordId, createdAt',
+    // id: UUID, personId: UUID, date: timestamp, comment: string, foods: [{ foodId, amount }]
+    // createdAt: timestamp, lastUpdated: timestamp, deleted: number
+    meals: 'id, personId, date, createdAt, lastUpdated, deleted, [deleted+personId]',
+    // id: increment, recordId: UUID, table: string, data: any, createdAt: timestamp
+    syncQueue: '++id, recordId, table, createdAt',
     // id: increment, key: string (e.g lastSync), value: any
     meta: '++id, key',
     // id: 'app', stores only the settings object

@@ -3,6 +3,7 @@ using System;
 using Diet.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diet.Infrastructure.Migrations
 {
     [DbContext(typeof(DietDbContext))]
-    partial class DietDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260509042010_MealsDeletedProp")]
+    partial class MealsDeletedProp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
@@ -82,8 +85,10 @@ namespace Diet.Infrastructure.Migrations
                     b.Property<long>("Date")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Deleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Foods")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<long>("LastUpdated")

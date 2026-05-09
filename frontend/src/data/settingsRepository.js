@@ -8,7 +8,8 @@ export async function initSettings() {
     if (!existing) {
         await db.settings.put({
             id: "app",
-            serverUrl: ""
+            serverUrl: "",
+            sync: 0
         });
     }
 }

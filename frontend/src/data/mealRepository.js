@@ -1,9 +1,10 @@
 import { db } from './db';
+import { addSyncRecord } from './syncRepository';
 
 export async function getMealsByPerson(personId) {
     if (!personId)
         return [];
-    return await db.meals.where('personId').equals(personId).toArray();
+    return await db.meals.where('[deleted+personId]').equals([0, personId]).toArray();
 }
 
 export async function getMealsByPersonAndDay(personId, day) {
@@ -12,14 +13,14 @@ export async function getMealsByPersonAndDay(personId, day) {
     const rangeStart = new Date(day.year, day.month, day.day).getTime();
     const rangeEnd = new Date(day.year, day.month, day.day + 1).getTime();
 
-    return await db.meals.where('personId').equals(personId).and(meal => {
+    return await db.meals.where('[deleted+personId]').equals([0, personId]).and(meal => {
         const mealTime = new Date(meal.date).getTime();
         return mealTime >= rangeStart && mealTime < rangeEnd;
     }).toArray();
 }
 
 export async function getMealDatesByPerson(personId) {
-    const meals = await db.meals.where('personId').equals(personId).toArray();
+    const meals = await db.meals.where('[deleted+personId]').equals([0, personId]).toArray();
     const dates = [...new Set(meals.map(meal => {
         const date = new Date(meal.date);
         return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -46,26 +47,41 @@ export async function getFoodsByMeal(mealId) {
 }
 
 export async function addMeal(meal) {
-    return await db.meals.add({
+    const timestamp = Date.now();
+    const newMeal = {
         personId: meal.personId,
         date: meal.date,
         foods: meal.foods,
         comment: meal.comment,
         id: crypto.randomUUID(),
-        createdAt: Date.now(),
-        lastUpdated: Date.now()
+        createdAt: timestamp,
+        lastUpdated: timestamp,
+        deleted: 0
+    };
+    await db.transaction('rw', db.meals, db.syncQueue, async (tx) => {
+        await db.meals.add(newMeal);
+        await addSyncRecord(tx, newMeal.id, 'meals', newMeal);
     });
 }
 
 export async function editMeal(id, meal) {
-    return await db.meals.update(id, {
-        date: meal.date,
-        foods: meal.foods,
-        comment: meal.comment,
-        lastUpdated: Date.now()
+    const timestamp = Date.now();
+    await db.transaction('rw', db.meals, db.syncQueue, async (tx) => {
+        await db.meals.update(id, {
+            date: meal.date,
+            foods: meal.foods,
+            comment: meal.comment,
+            lastUpdated: timestamp
+        });
+        const updatedMeal = await db.meals.get(id);
+        await addSyncRecord(tx, updatedMeal.id, 'meals', updatedMeal);
     });
 }
 
 export async function removeMeal(id) {
-    return await db.meals.delete(id);
+    await db.transaction('rw', db.foods, db.syncQueue, async (tx) => {
+        await db.meals.update(id, { deleted: 1, lastUpdated: Date.now() });
+        const meal = await db.meals.get(id);
+        await addSyncRecord(tx, meal.id, 'meals', meal)
+    });
 }

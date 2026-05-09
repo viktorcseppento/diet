@@ -39,7 +39,8 @@ public static class EntityConversionExtensions
             Foods = dto.Foods,
             Amount = dto.Amount,
             CreatedAt = dto.CreatedAt,
-            LastUpdated = dto.LastUpdated
+            LastUpdated = dto.LastUpdated,
+            Deleted = dto.Deleted
         };
     }
 
@@ -54,7 +55,8 @@ public static class EntityConversionExtensions
             Foods = entity.Foods,
             Amount = entity.Amount,
             CreatedAt = entity.CreatedAt,
-            LastUpdated = entity.LastUpdated
+            LastUpdated = entity.LastUpdated,
+            Deleted = entity.Deleted
         };
     }
 

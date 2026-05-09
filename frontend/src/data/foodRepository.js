@@ -1,5 +1,6 @@
 import Dexie from 'dexie';
 import { db } from './db';
+import { addSyncRecord } from './syncRepository';
 
 export async function getFoods() {
     return await db.foods.where('[deleted+lastUpdated]').between([0, Dexie.minKey], [0, Dexie.maxKey]).reverse().toArray();
@@ -27,28 +28,42 @@ export async function getIngredients(id) {
 }
 
 export async function addFood(food) {
-    return await db.foods.add({
+    const timestamp = Date.now();
+    const newFood = {
         ...food,
         id: crypto.randomUUID(),
-        createdAt: Date.now(),
-        lastUpdated: Date.now(),
+        createdAt: timestamp,
+        lastUpdated: timestamp,
         deleted: 0
+    };
+    await db.transaction('rw', db.foods, db.syncQueue, async (tx) => {
+        await db.foods.add(newFood);
+        await addSyncRecord(tx, newFood.id, 'foods', newFood);
     });
 }
 
 export async function editFood(id, food) {
-    return await db.transaction('rw', db.foods, async () => {
-        await db.foods.update(id, { deleted: 1, lastUpdated: Date.now() });
-        await db.foods.add({
-            ...food,
-            id: crypto.randomUUID(),
-            createdAt: Date.now(),
-            lastUpdated: Date.now(),
-            deleted: 0
-        });
+    const timestamp = Date.now();
+    const newFood = {
+        ...food,
+        id: crypto.randomUUID(),
+        createdAt: timestamp,
+        lastUpdated: timestamp,
+        deleted: 0
+    };
+    await db.transaction('rw', db.foods, db.syncQueue, async (tx) => {
+        await db.foods.update(id, { deleted: 1, lastUpdated: timestamp });
+        const oldFood = await db.foods.get(id);
+        await addSyncRecord(tx, oldFood.id, 'foods', oldFood)
+        await db.foods.add(newFood);
+        await addSyncRecord(tx, newFood.id, 'foods', newFood)
     });
 }
 
 export async function removeFood(id) {
-    return await db.foods.update(id, { deleted: 1, lastUpdated: Date.now() });
+    await db.transaction('rw', db.foods, db.syncQueue, async (tx) => {
+        await db.foods.update(id, { deleted: 1, lastUpdated: Date.now() });
+        const food = await db.foods.get(id);
+        await addSyncRecord(tx, food.id, 'foods', food)
+    });
 }

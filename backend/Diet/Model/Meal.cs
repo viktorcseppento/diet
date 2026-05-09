@@ -11,6 +11,7 @@ public class MealEntity
     public double Amount { get; set; }
     public long CreatedAt { get; set; }
     public long LastUpdated { get; set; }
+    public int Deleted { get; set; }
 }
 
 public class MealDto
@@ -23,4 +24,5 @@ public class MealDto
     public required double Amount { get; set; }
     public required long CreatedAt { get; set; }
     public required long LastUpdated { get; set; }
+    public required int Deleted { get; set; }
 }
