@@ -2,11 +2,15 @@
 @use 'sass:color';
 
 .tabsList {
-    position: relative;
+    position: sticky;
+    top: 0;
+    background-color: white;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     border-bottom: 1px solid $medium-border-color;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 12px;
+    z-index: 1;
 }
 
 .settingsButton {

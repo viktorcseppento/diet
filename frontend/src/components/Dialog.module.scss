@@ -19,6 +19,7 @@
     top: 12px;
     justify-content: center;
     max-height: calc(100vh - 24px);
+    z-index: 2;
 }
 
 .confirmDialogContainer {
@@ -28,6 +29,7 @@
     top: 20px;
     justify-content: center;
     max-height: calc(100vh - 24px);
+    z-index: 2;
 }
 
 .dialogHeader {
@@ -43,6 +45,7 @@
     width: 400px;
 
     animation: hide 0.3s ease;
+    box-shadow: $popover-shadow;
 
     &[data-expanded] {
         animation: show 0.3s ease;
@@ -56,6 +59,7 @@
     width: 380px;
 
     animation: hide 0.3s ease;
+    box-shadow: $popover-shadow;
 
     &[data-expanded] {
         animation: show 0.3s ease;
