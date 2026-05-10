@@ -1,6 +1,6 @@
 import { Button } from '@kobalte/core/button';
 import { createMemo, createResource, For, Show } from 'solid-js';
-import ConfirmDialogContent from '../../components/ConfirmDialogContent';
+import { useConfirmDialogContext } from '../../context/ConfirmDialogContext';
 import { useDialogContext } from '../../context/DialogContext';
 import { getFoodsByMeal, getMealsByPersonAndDay, removeMeal } from '../../data/mealRepository';
 import createLiveQuery from '../../hooks/createLiveQuery';
@@ -13,6 +13,7 @@ import styles from './MealsList.module.scss';
 
 export default function MealsList(props) {
     const { setDialogData } = useDialogContext();
+    const { setConfirmDialogData } = useConfirmDialogContext();
     const meals = createLiveQuery(() => getMealsByPersonAndDay(props.person()?.id, props.day()), props.person, props.day);
 
     const sortedMeals = createMemo(() => [...meals()].sort((m1, m2) => m2.timestamp - m1.timestamp));
@@ -73,15 +74,11 @@ export default function MealsList(props) {
                                     </Button>
                                     <Button
                                         class={classList(styles.itemButton, styles.trashButton)}
-                                        onClick={() => setDialogData(() => ({
+                                        onClick={() => setConfirmDialogData(() => ({
                                             isOpen: true,
                                             title: 'Étkezés törlése',
-                                            content: () => (
-                                                <ConfirmDialogContent
-                                                    text="Biztosan törölni szeretnéd ezt az étkezést?"
-                                                    onConfirm={() => removeMeal(meal.id)}
-                                                />
-                                            )
+                                            text: 'Biztosan törölni szeretnéd ezt az étkezéset?',
+                                            onConfirm: () => removeMeal(meal.id)
                                         }))}
                                     >
                                         <i class={`fa-solid fa-trash`} />

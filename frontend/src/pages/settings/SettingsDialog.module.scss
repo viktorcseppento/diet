@@ -1,2 +1,86 @@
 @use '~/index.scss' as *;
 @use 'sass:color';
+
+.switch {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.switchControl {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    width: 40px;
+    border: 1px solid hsl(240 5% 84%);
+    border-radius: 12px;
+    padding: 0 2px;
+    background-color: hsl(240 6% 90%);
+    transition: 250ms background-color;
+}
+
+.switchInput:focus-visible+.switchControl {
+    outline: 2px solid hsl(200 98% 39%);
+    outline-offset: 2px;
+}
+
+.switchControl[data-checked] {
+    border-color: hsl(200 98% 39%);
+    background-color: hsl(200 98% 39%);
+}
+
+.switchThumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+    background-color: white;
+    transition: 250ms transform;
+}
+
+.switchThumb[data-checked] {
+    transform: translateX(calc(100% - 1px));
+}
+
+.button {
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-width: 1px;
+}
+
+.resultText {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.success {
+    color: $success-color;
+}
+
+.error {
+    color: $error-color;
+}
+
+.deleteButton {
+    background-color: $error-color;
+    border-color: $error-color;
+    color: white;
+
+    &:hover {
+        background-color: $error-color-hover;
+        border-color: $error-color-hover;
+        color: white;
+    }
+}
+
+.deleteButton2 {
+    background-color: transparent;
+    border-color: $error-color;
+    color: $error-color;
+
+    &:hover {
+        background-color: $error-color;
+        border-color: $error-color;
+        color: white;
+    }
+}

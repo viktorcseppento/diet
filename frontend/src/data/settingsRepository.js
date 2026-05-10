@@ -22,3 +22,11 @@ export async function updateSettings(settings) {
         id: "app"
     });
 }
+
+export async function updateSettingsField(key, value) {
+    const settings = await getSettings();
+    return await updateSettings({
+        ...settings,
+        [key]: value
+    });
+}

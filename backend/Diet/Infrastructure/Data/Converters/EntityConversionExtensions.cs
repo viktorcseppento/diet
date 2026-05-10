@@ -37,7 +37,6 @@ public static class EntityConversionExtensions
             Date = dto.Date,
             Comment = dto.Comment,
             Foods = dto.Foods,
-            Amount = dto.Amount,
             CreatedAt = dto.CreatedAt,
             LastUpdated = dto.LastUpdated,
             Deleted = dto.Deleted
@@ -53,7 +52,6 @@ public static class EntityConversionExtensions
             Date = entity.Date,
             Comment = entity.Comment,
             Foods = entity.Foods,
-            Amount = entity.Amount,
             CreatedAt = entity.CreatedAt,
             LastUpdated = entity.LastUpdated,
             Deleted = entity.Deleted

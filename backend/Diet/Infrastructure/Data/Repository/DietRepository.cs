@@ -6,12 +6,13 @@ namespace Diet.Infrastructure.Data.Repository;
 
 public class DietRepository(DietDbContext dbContext) : IDietRepository
 {
-    private readonly DietDbContext dbContext;
+    private readonly DietDbContext dbContext = dbContext;
 
     public async Task<IList<FoodEntity>> ListChangedFoods(long since)
     {
         return await dbContext.Foods
             .Where(f => f.LastUpdated > since)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -19,6 +20,7 @@ public class DietRepository(DietDbContext dbContext) : IDietRepository
     {
         return await dbContext.Meals
             .Where(m => m.LastUpdated > since)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -26,6 +28,7 @@ public class DietRepository(DietDbContext dbContext) : IDietRepository
     {
         return await dbContext.People
             .Where(p => p.LastUpdated > since)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -33,38 +36,47 @@ public class DietRepository(DietDbContext dbContext) : IDietRepository
     {
         return await dbContext.Tombstones
             .Where(t => t.DeletedAt > since)
+            .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<List<PersonEntity>> ListPeopleByIds(IEnumerable<Guid> ids)
+    public async Task<List<PersonEntity>> ListPeopleByIds(IList<Guid> ids)
     {
         return await dbContext.People
             .Where(p => ids.Contains(p.Id))
+            .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<List<MealEntity>> ListMealsByIds(IEnumerable<Guid> ids)
+    public async Task<List<MealEntity>> ListMealsByIds(IList<Guid> ids)
     {
         return await dbContext.Meals
             .Where(m => ids.Contains(m.Id))
+            .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<List<FoodEntity>> ListFoodsByIds(IEnumerable<Guid> ids)
+    public async Task<List<FoodEntity>> ListFoodsByIds(IList<Guid> ids)
     {
         return await dbContext.Foods
             .Where(f => ids.Contains(f.Id))
+            .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task AddItems(IList<PersonEntity> people, IList<FoodEntity> foods, IList<MealEntity> meals)
+    public async Task AddItems(IList<PersonEntity> newPeople, IList<PersonEntity> updatedPeople,
+        IList<FoodEntity> newFoods, IList<FoodEntity> updatedFoods, IList<MealEntity> newMeals,
+        IList<MealEntity> updatedMeals)
     {
         await dbContext.Database.BeginTransactionAsync();
         try
         {
-            await dbContext.People.AddRangeAsync(people);
-            await dbContext.Foods.AddRangeAsync(foods);
-            await dbContext.Meals.AddRangeAsync(meals);
+            dbContext.People.AddRange(newPeople);
+            dbContext.People.UpdateRange(updatedPeople);
+            dbContext.Foods.AddRange(newFoods);
+            dbContext.Foods.UpdateRange(updatedFoods);
+            dbContext.Meals.AddRange(newMeals);
+            dbContext.Meals.UpdateRange(updatedMeals);
             await dbContext.SaveChangesAsync();
             await dbContext.Database.CommitTransactionAsync();
         }

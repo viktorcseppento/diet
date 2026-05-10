@@ -10,18 +10,18 @@ namespace Diet.Api.v1;
 public class SyncController(ISyncService syncService) : ControllerBase
 {
     private readonly ISyncService syncService = syncService;
-    
+
     [HttpGet("pull")]
-    public ActionResult<PullResponse> Pull([FromQuery] [Required] long since)
+    public async Task<ActionResult<PullResponse>> Pull([FromQuery] [Required] long since)
     {
-        var response = syncService.ListChanges(since);
+        var response = await syncService.ListChanges(since);
         return Ok(response);
     }
 
-    [HttpGet("push")]
-    public ActionResult Push([FromBody] [Required] PushRequest request)
+    [HttpPost("push")]
+    public async Task<ActionResult> Push([FromBody] [Required] PushRequest request)
     {
-        syncService.PushChanges(request);
+        await syncService.PushChanges(request);
         return Ok();
     }
 }

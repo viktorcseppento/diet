@@ -28,38 +28,46 @@ public class SyncService(IDietRepository dietRepository) : ISyncService
 
     public async Task PushChanges(PushRequest request)
     {
-        var people = await dietRepository.ListPeopleByIds(request.People.Select(p => p.Id));
-        var foods = await dietRepository.ListFoodsByIds(request.Foods.Select(f => f.Id));
-        var meals = await dietRepository.ListMealsByIds(request.Meals.Select(m => m.Id));
-        var requestPeopleDictionary = request.People.ToDictionary(p => p.Id);
-        var requestFoodsDictionary = request.Foods.ToDictionary(f => f.Id);
-        var requestMealsDictionary = request.Meals.ToDictionary(m => m.Id);
+        var people = await dietRepository.ListPeopleByIds(request.People.Select(p => p.Id).ToList());
+        var foods = await dietRepository.ListFoodsByIds(request.Foods.Select(f => f.Id).ToList());
+        var meals = await dietRepository.ListMealsByIds(request.Meals.Select(m => m.Id).ToList());
+        var peopleDictionary = people.ToDictionary(p => p.Id);
+        var foodsDictionary = foods.ToDictionary(f => f.Id);
+        var mealsDictionary = meals.ToDictionary(m => m.Id);
         var newPeople = new List<PersonEntity>();
         var newFoods = new List<FoodEntity>();
         var newMeals = new List<MealEntity>();
+        var updatedPeople = new List<PersonEntity>();
+        var updatedFoods = new List<FoodEntity>();
+        var updatedMeals = new List<MealEntity>();
 
-        // Get the newer items
-        people.ForEach(p =>
+        foreach (var person in request.People)
         {
-            var requestPerson = requestPeopleDictionary[p.Id];
-            if (requestPerson.LastUpdated > p.LastUpdated)
-                newPeople.Add(requestPerson.ToEntity());
-        });
+            var entityPerson = peopleDictionary.GetValueOrDefault(person.Id);
+            if (entityPerson == null)
+                newPeople.Add(person.ToEntity());
+            else if (person.LastUpdated > entityPerson.LastUpdated)
+                updatedPeople.Add(person.ToEntity());
+        }
 
-        foods.ForEach(f =>
+        foreach (var food in request.Foods)
         {
-            var requestFood = requestFoodsDictionary[f.Id];
-            if (requestFood.LastUpdated > f.LastUpdated)
-                newFoods.Add(requestFood.ToEntity());
-        });
+            var entityFood = foodsDictionary.GetValueOrDefault(food.Id);
+            if (entityFood == null)
+                newFoods.Add(food.ToEntity());
+            else if (food.LastUpdated > entityFood.LastUpdated)
+                updatedFoods.Add(food.ToEntity());
+        }
 
-        meals.ForEach(m =>
+        foreach (var meal in request.Meals)
         {
-            var requestMeal = requestMealsDictionary[m.Id];
-            if (requestMeal.LastUpdated > m.LastUpdated)
-                newMeals.Add(requestMeal.ToEntity());
-        });
+            var entityMeal = mealsDictionary.GetValueOrDefault(meal.Id);
+            if (entityMeal == null)
+                newMeals.Add(meal.ToEntity());
+            else if (meal.LastUpdated > entityMeal.LastUpdated)
+                updatedMeals.Add(meal.ToEntity());
+        }
 
-        await dietRepository.AddItems(newPeople, newFoods, newMeals);
+        await dietRepository.AddItems(newPeople, updatedPeople, newFoods, updatedFoods, newMeals, updatedMeals);
     }
 }

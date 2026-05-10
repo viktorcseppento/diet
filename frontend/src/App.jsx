@@ -9,6 +9,7 @@ import SettingsDialog from './pages/settings/SettingsDialog';
 import { startSyncScheduler } from './services/syncScheduler';
 import { onMount } from 'solid-js';
 import { initSettings } from './data/settingsRepository';
+import ConfirmDialog from './components/ConfirmDialog';
 
 export default function App() {
   const { setDialogData } = useDialogContext();
@@ -42,6 +43,7 @@ export default function App() {
         <Tabs.Content value="food"><FoodList /></Tabs.Content>
       </Tabs>
       <Dialog />
+      <ConfirmDialog />
     </>
   );
 }

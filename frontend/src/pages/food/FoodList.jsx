@@ -1,8 +1,8 @@
 import { Button } from '@kobalte/core/button';
 import { createSignal, For } from 'solid-js';
 import appStyles from '~/App.module.scss';
-import ConfirmDialogContent from '../../components/ConfirmDialogContent';
 import SearchBox from '../../components/SearchBox';
+import { useConfirmDialogContext } from '../../context/ConfirmDialogContext';
 import { useDialogContext } from '../../context/DialogContext';
 import { getFoods, removeFood } from '../../data/foodRepository';
 import createLiveQuery from '../../hooks/createLiveQuery';
@@ -18,6 +18,7 @@ export default function FoodList() {
     const foods = createLiveQuery(getFoods);
 
     const { setDialogData } = useDialogContext();
+    const { setConfirmDialogData } = useConfirmDialogContext();
     const [search, setSearch] = createSignal('');
 
     const getFormComponent = (type, food) => {
@@ -46,15 +47,11 @@ export default function FoodList() {
                     <Button
                         class={classList(styles.itemButton, styles.trashButton)}
                         onClick={() => {
-                            setDialogData(() => ({
+                            setConfirmDialogData(() => ({
                                 isOpen: true,
                                 title: `Étel törlése`,
-                                content: () => (
-                                    <ConfirmDialogContent
-                                        text={`Biztosan törli a(z) <i><b>${food.name}</b></i> ételt?`}
-                                        onConfirm={async () => await removeFood(food.id)}
-                                    />
-                                )
+                                text: `Biztosan törli a(z) <i><b>${food.name}</b></i> ételt?`,
+                                onConfirm: async () => await removeFood(food.id)
                             }));
                         }}
                     >

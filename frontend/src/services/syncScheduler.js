@@ -1,4 +1,4 @@
-import { checkServerConnection, sync } from "./syncService";
+import { checkServerConnection, getSync, sync } from "./syncService";
 
 let intervalId;
 
@@ -16,6 +16,9 @@ export function startSyncScheduler() {
 
 async function syncIfOnline() {
     if (!navigator.onLine) {
+        return;
+    }
+    if (!await getSync()) {
         return;
     }
     if (await checkServerConnection()) {

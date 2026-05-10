@@ -3,8 +3,8 @@ import { DropdownMenu } from '@kobalte/core/dropdown-menu';
 import { Popover } from '@kobalte/core/popover';
 import { createEffect, createMemo, createResource, createSignal, For } from 'solid-js';
 import appStyles from '~/App.module.scss';
-import ConfirmDialogContent from '../../components/ConfirmDialogContent';
 import DatePicker from '../../components/DatePicker';
+import { useConfirmDialogContext } from '../../context/ConfirmDialogContext';
 import { useDialogContext } from '../../context/DialogContext';
 import { getMealDatesByPerson } from '../../data/mealRepository';
 import { getPeople, removePerson } from '../../data/personRepository';
@@ -19,6 +19,7 @@ const today = new Date();
 export default function Meals() {
     const people = createLiveQuery(getPeople);
     const { setDialogData } = useDialogContext();
+    const { setConfirmDialogData } = useConfirmDialogContext();
     const [selectedPersonIdx, setSelectedPersonIdx] = createSignal();
     const [selectedDay, setSelectedDay] = createSignal({ year: today.getFullYear(), month: today.getMonth(), day: today.getDate() });
 
@@ -63,7 +64,7 @@ export default function Meals() {
             content: () => (
                 <PersonForm
                     onSubmit={() => {
-                        setSelectedPersonIdx(people().length - 1);
+                        setSelectedPersonIdx(people().length);
                         resetSelectedDay();
                     }}
                 />
@@ -87,25 +88,21 @@ export default function Meals() {
     };
 
     const handleDeletePerson = () => {
-        setDialogData(() => ({
+        setConfirmDialogData(() => ({
             isOpen: true,
             title: 'Személy törlése',
-            content: () => (
-                <ConfirmDialogContent
-                    text={`Biztosan törli a kijelölt személyt?`}
-                    onConfirm={async () => {
-                        const currentIdx = selectedPersonIdx();
-                        let nextSelectedPersonIdx = null;
-                        if (people().length > 1) {
-                            nextSelectedPersonIdx = currentIdx === 0 ? 0 : currentIdx - 1;
-                        }
+            text: `Biztosan törli a kijelölt személyt?`,
+            onConfirm: async () => {
+                const currentIdx = selectedPersonIdx();
+                let nextSelectedPersonIdx = null;
+                if (people().length > 1) {
+                    nextSelectedPersonIdx = currentIdx === 0 ? 0 : currentIdx - 1;
+                }
 
-                        await removePerson(selectedPerson().id);
-                        setSelectedPersonIdx(nextSelectedPersonIdx);
-                        resetSelectedDay();
-                    }}
-                />
-            )
+                await removePerson(selectedPerson().id);
+                setSelectedPersonIdx(nextSelectedPersonIdx);
+                resetSelectedDay();
+            }
         }));
     };
 

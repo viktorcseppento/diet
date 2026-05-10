@@ -21,6 +21,15 @@
     max-height: calc(100vh - 24px);
 }
 
+.confirmDialogContainer {
+    position: fixed;
+    display: flex;
+    width: 100%;
+    top: 20px;
+    justify-content: center;
+    max-height: calc(100vh - 24px);
+}
+
 .dialogHeader {
     display: flex;
     justify-content: space-between;
@@ -32,6 +41,19 @@
     border-radius: 8px;
     padding: 16px;
     width: 400px;
+
+    animation: hide 0.3s ease;
+
+    &[data-expanded] {
+        animation: show 0.3s ease;
+    }
+}
+
+.confirmDialogContent {
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+    width: 380px;
 
     animation: hide 0.3s ease;
 
@@ -70,5 +92,51 @@
 
     to {
         opacity: 0;
+    }
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.button {
+    font-size: 14px;
+    padding: 4px 16px;
+    border: solid 1px $medium-border-color;
+    border-radius: 4px;
+    height: 32px;
+}
+
+.cancelButton {
+    background-color: transparent;
+}
+
+.confirmButton {
+    background-color: $primary-color;
+    color: white;
+    border-color: $heavy-border-color;
+
+    &:hover {
+        background-color: $primary-color-hover;
+        color: white;
+    }
+}
+
+.deleteButton {
+    background-color: $error-color;
+    color: white;
+    border-color: $error-color;
+
+    &:hover {
+        background-color: $error-color-hover;
+        border-color: $error-color-hover;
+        color: white;
     }
 }

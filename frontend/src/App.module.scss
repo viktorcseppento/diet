@@ -70,7 +70,9 @@
 .formRow {
     display: flex;
     gap: 20px;
+    row-gap: 12px;
     flex-flow: wrap;
+    align-items: center;
 }
 
 .formField {

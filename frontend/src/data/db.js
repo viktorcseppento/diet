@@ -19,3 +19,8 @@ db.version(1).stores({
     // id: 'app', stores only the settings object
     settings: 'id'
 });
+
+const lastSyncRecord = await db.meta.get({ key: 'lastSync' });
+if (!lastSyncRecord) {
+    await db.meta.add({ key: 'lastSync', value: 0 });
+}
