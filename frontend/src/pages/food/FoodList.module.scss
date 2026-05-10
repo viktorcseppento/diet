@@ -51,11 +51,40 @@
     font-weight: 600;
     text-align: center;
     margin-bottom: 8px;
+    border-radius: 14px;
+    padding-block: 6px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $primary-background-color-hover;
+    }
+}
+
+.expandIcon {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 16px;
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+
+    &[data-expanded] {
+        transform: rotate(180deg);
+    }
 }
 
 .list {
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+
+    &[data-collapsed-transform] {
+        transform: translateY(-50%) scaleY(0);
+        pointer-events: none;
+        visibility: hidden;
+    }
 }
 
 .column:nth-child(odd) .item {

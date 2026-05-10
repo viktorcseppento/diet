@@ -1,5 +1,5 @@
 import { Button } from '@kobalte/core/button';
-import { createSignal, For } from 'solid-js';
+import { createMemo, createSignal, For, Show } from 'solid-js';
 import appStyles from '~/App.module.scss';
 import SearchBox from '../../components/SearchBox';
 import { useConfirmDialogContext } from '../../context/ConfirmDialogContext';
@@ -20,6 +20,7 @@ export default function FoodList() {
     const { setDialogData } = useDialogContext();
     const { setConfirmDialogData } = useConfirmDialogContext();
     const [search, setSearch] = createSignal('');
+    const [collapsed, setCollapsed] = createSignal({ basic: false, composite: false });
 
     const getFormComponent = (type, food) => {
         if (type === 'BASIC') return () => <BasicFoodForm initialData={food} />;
@@ -65,15 +66,29 @@ export default function FoodList() {
         </div>
     );
 
-    const column = (type) => {
-        const filteredFoods = foods()
-            .filter(food => food.type === type && food.name.toLowerCase().includes(search().toLowerCase()));
+    function Column(props) {
+        const filteredFoods = createMemo(() => foods()
+            .filter(food => food.type === props.type && food.name.toLowerCase().includes(search().toLowerCase())));
+        const isCollapsed = createMemo(() => props.type === 'BASIC' ? collapsed().basic : collapsed().composite);
 
         return (
             <div class={styles.column}>
-                <span class={styles.listHeader}>{type === 'BASIC' ? 'Alap' : 'Összetett'}</span>
-                <div class={styles.list}>
-                    <For each={filteredFoods}>{food => renderFoodItem(food, type)}</For>
+                <span
+                    class={styles.listHeader}
+                    onClick={() => {
+                        if (props.type === 'BASIC') setCollapsed(collapsed => ({ basic: !isCollapsed(), composite: collapsed.composite }));
+                        if (props.type === 'COMPOSITE') setCollapsed(collapsed => ({ basic: collapsed.basic, composite: !isCollapsed() }));
+                    }}
+                >
+                    {props.type === 'BASIC' ? 'Alap' : 'Összetett'}
+                    <span class={styles.expandIcon} data-expanded={!isCollapsed() ? "" : undefined} >
+                        <i class='fa-solid fa-chevron-down' />
+                    </span>
+                </span>
+                <div class={styles.list} data-collapsed-transform={isCollapsed() && filteredFoods().length < 20 ? "" : undefined} >
+                    <Show when={!isCollapsed() || isCollapsed() && filteredFoods().length < 20}>
+                        <For each={filteredFoods()}>{food => renderFoodItem(food, props.type)}</For>
+                    </Show>
                 </div>
             </div>
         );
@@ -95,8 +110,8 @@ export default function FoodList() {
                 <SearchBox value={search} setValue={setSearch} />
             </div>
             <div class={styles.listContainer}>
-                {column('BASIC')}
-                {column('COMPOSITE')}
+                <Column type="BASIC" />
+                <Column type="COMPOSITE" />
             </div>
         </div>
     );
