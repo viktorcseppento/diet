@@ -14,8 +14,8 @@ import ConfirmDialog from './components/ConfirmDialog';
 export default function App() {
   const { setDialogData } = useDialogContext();
 
-  onMount(() => {
-    initSettings();
+  onMount(async () => {
+    await initSettings();
     startSyncScheduler();
   });
 

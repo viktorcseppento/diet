@@ -46,6 +46,7 @@ export default function MealForm(props) {
 
     const valid = createMemo(() => formData.hour?.trim().length > 0
         && formData.minute?.trim().length > 0
+        && formData.foods.length
         && formData.foods.every(f => f.food && f.amount && f.amount > 0)
     );
 

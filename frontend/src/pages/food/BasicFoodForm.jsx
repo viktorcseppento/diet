@@ -77,7 +77,7 @@ export default function BasicFoodForm(props) {
     };
 
     return (
-        <form class={appStyles.form} onsubmit={handleSubmit}>
+        <form class={appStyles.form}>
             <div class={appStyles.formField}>
                 <label htmlFor='name'>Név:</label>
                 <input
@@ -175,7 +175,13 @@ export default function BasicFoodForm(props) {
                     onInput={(e) => setFormData('protein', parseFloat(e.currentTarget.value || 0))}
                 />
             </div>
-            <Button type='submit' class={appStyles.formButton} disabled={!valid()}>Mentés</Button>
+            <Button
+                class={appStyles.formButton}
+                disabled={!valid()}
+                onClick={handleSubmit}
+            >
+                Mentés
+            </Button>
         </form>
     );
 }

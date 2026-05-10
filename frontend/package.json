@@ -1,6 +1,6 @@
 {
   "name": "diet",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "",
   "type": "module",
   "scripts": {
@@ -10,15 +10,18 @@
     "cap:sync": "npx cap sync",
     "cap:assets": "npx capacitor-assets generate",
     "cap:prepare": "npm run build && npm run cap:sync",
-    "android:apk": "cd android && ./gradlew assembleDebug",
-    "android:build": "npm run cap:prepare && npx cap build android && npm run android:apk"
+    "android:build": "npm run cap:prepare && npx cap build android",
+    "android:apk-debug": "cd android && gradlew assembleDebug",
+    "android:apk-release": "cd android && gradlew assembleRelease"
   },
   "license": "MIT",
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.3.1",
+    "mkcert": "^3.2.0",
     "sass": "^1.98.0",
     "vite": "^7.3.1",
+    "vite-plugin-mkcert": "^1.17.12",
     "vite-plugin-solid": "^2.11.11"
   },
   "dependencies": {
@@ -26,6 +29,7 @@
     "@capacitor/core": "^8.3.1",
     "@kobalte/core": "^0.13.11",
     "dexie": "^4.4.2",
-    "solid-js": "^1.9.11"
+    "solid-js": "^1.9.11",
+    "uuid": "^14.0.0"
   }
 }

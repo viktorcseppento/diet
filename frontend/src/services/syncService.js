@@ -7,7 +7,7 @@ async function getServerUrl() {
 }
 
 export async function getSync() {
-    return (await getSettings()).sync;
+    return (await getSettings())?.sync === 1;
 }
 
 function pushDataFromQueue(queue) {

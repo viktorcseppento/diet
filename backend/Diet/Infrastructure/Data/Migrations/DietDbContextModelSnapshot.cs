@@ -69,7 +69,6 @@ namespace Diet.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 

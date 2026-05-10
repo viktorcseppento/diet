@@ -34,7 +34,7 @@ export default function SettingsDialog() {
             <div class={appStyles.formField}>
                 <label htmlFor='sync'>Szinkronizálás:</label>
                 <Switch class={styles.switch} id='sync' checked={settings()?.sync} onChange={async (e) => {
-                    await updateSettingsField("sync", e);
+                    await updateSettingsField("sync", Number(e));
                 }} >
                     <Switch.Input class={styles.switchInput} />
                     <Switch.Control class={styles.switchControl}>
@@ -46,6 +46,10 @@ export default function SettingsDialog() {
                 <label htmlFor='serverUrl'>Szerver URL:</label>
                 <input
                     id='serverUrl'
+                    autocapitalize="none"
+                    autocomplete="off"
+                    autocorrect="off"
+                    spellcheck="false"
                     type='text'
                     value={serverUrl()}
                     onInput={(e) => {

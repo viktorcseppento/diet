@@ -1,4 +1,5 @@
 import Dexie from 'dexie';
+import { v4 as uuidv4 } from 'uuid';
 import { db } from './db';
 import { addSyncRecord } from './syncRepository';
 
@@ -31,7 +32,7 @@ export async function addFood(food) {
     const timestamp = Date.now();
     const newFood = {
         ...food,
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         createdAt: timestamp,
         lastUpdated: timestamp,
         deleted: 0
@@ -46,7 +47,7 @@ export async function editFood(id, food) {
     const timestamp = Date.now();
     const newFood = {
         ...food,
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         createdAt: timestamp,
         lastUpdated: timestamp,
         deleted: 0

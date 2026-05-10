@@ -26,8 +26,8 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.MapGet("/health", () => Results.Ok());
 app.UseCors("AllowAny");
+app.MapGet("/health", () => Results.Ok());
 app.MapControllers();
 
 app.Run();
