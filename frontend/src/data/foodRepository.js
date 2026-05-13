@@ -4,7 +4,7 @@ import { db } from './db';
 import { addSyncRecord } from './syncRepository';
 
 export async function getFoods() {
-    return await db.foods.where('[deleted+lastUpdated]').between([0, Dexie.minKey], [0, Dexie.maxKey]).reverse().toArray();
+    return await db.foods.where('[deleted+createdAt]').between([0, Dexie.minKey], [0, Dexie.maxKey]).reverse().toArray();
 }
 
 export async function getAllFoods() {

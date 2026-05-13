@@ -69,9 +69,12 @@ export default function FoodList() {
     function Column(props) {
         const isCollapsed = createMemo(() => props.type === 'BASIC' ? collapsed().basic : collapsed().composite);
         const filteredFoods = createMemo(() => {
-            // if(isCollapsed()) return [];
-            return foods()
-                .filter(food => food.type === props.type && food.name.toLowerCase().includes(search().toLowerCase()));
+            const query = search().toLowerCase();
+            return foods().filter(food =>
+                food.type === props.type && (
+                    food.name.toLowerCase().includes(query) ||
+                    food.ingredients?.some(i => i.foodName?.toLowerCase().includes(query))
+                ));
         });
 
         let listRef;

@@ -10,7 +10,7 @@ db.version(1).stores({
     // macros { fat, fatSaturated, fastCarbohydrate, slowCarbohydrate, fiber, protein }
     // allergens { addedSugar, dairy, egg, gluten }
     // deleted: number, createdAt: timestamp, lastUpdated: timestamp
-    foods: 'id, name, type, deleted, createdAt, lastUpdated, [deleted+lastUpdated]',
+    foods: 'id, name, type, deleted, createdAt, lastUpdated, [deleted+lastUpdated], [deleted+createdAt]',
     // id: UUID, personId: UUID, date: timestamp, comment: string, foods: [{ foodId, amount }]
     // createdAt: timestamp, lastUpdated: timestamp, deleted: number
     meals: 'id, personId, date, createdAt, lastUpdated, deleted, [deleted+personId]',
@@ -77,7 +77,12 @@ db.version(2).upgrade(async tx => {
     await tx.table('syncQueue').bulkPut(syncQueue);
 })
 
-db.on('populate', async () => {
+const lastSyncRecord = await db.meta.get({ key: 'lastSync' });
+if (!lastSyncRecord) {
     await db.meta.add({ key: 'lastSync', value: 0 });
-});
+}
 
+const settingsRecord = await db.settings.get({ id: 'app' });
+if (!settingsRecord) {
+    await db.settings.add({ id: 'app', serverUrl: "", sync: 0 });
+}

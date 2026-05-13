@@ -3,7 +3,7 @@
 public struct Ingredient
 {
     public required Guid FoodId { get; set; }
-    public string FoodName { get; set; }
+    public string? FoodName { get; set; }
     public double Amount { get; set; }
 }
 

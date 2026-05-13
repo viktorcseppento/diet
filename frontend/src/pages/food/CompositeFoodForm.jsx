@@ -71,7 +71,7 @@ export default function CompositeFoodForm(props) {
                 name: formData.name.trim(),
                 measure: formData.measure.key,
                 amount: formData.amount,
-                ingredients: formData.ingredients.map(i => ({ foodId: i.food.id, amount: i.amount })),
+                ingredients: formData.ingredients.map(i => ({ foodId: i.food.id, foodName: i.food.name, amount: i.amount })),
                 macros: macros()
             });
             setDialogOpen(false);
@@ -82,7 +82,7 @@ export default function CompositeFoodForm(props) {
             name: formData.name.trim(),
             measure: formData.measure.key,
             amount: formData.amount,
-            ingredients: formData.ingredients.map(i => ({ foodId: i.food.id, amount: i.amount })),
+            ingredients: formData.ingredients.map(i => ({ foodId: i.food.id, foodName: i.food.name, amount: i.amount })),
             macros: macros()
         });
         setDialogOpen(false);
