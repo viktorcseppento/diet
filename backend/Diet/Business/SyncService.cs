@@ -67,6 +67,8 @@ public class SyncService(IDietRepository dietRepository) : ISyncService
             else if (meal.LastUpdated > entityMeal.LastUpdated)
                 updatedMeals.Add(meal.ToEntity());
         }
+        
+        // TODO if the updated ones are in tombstone then get those out of there
 
         await dietRepository.AddItems(newPeople, updatedPeople, newFoods, updatedFoods, newMeals, updatedMeals);
     }

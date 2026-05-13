@@ -1,3 +1,5 @@
+import { MEASURE_UNITS } from "./enums";
+
 export function formatNumber(num) {
     if (isFinite(num)) {
         return Math.round(num * 100) / 100;
@@ -26,4 +28,8 @@ export function translateMonth(month) {
 
 export function translateDay(day) {
     return dayAbbreviations[day];
+}
+
+export function foodNameWithMeasure(food) {
+    return `${food.name} - ${MEASURE_UNITS.find(m => m.key === food.measure).label}`;
 }

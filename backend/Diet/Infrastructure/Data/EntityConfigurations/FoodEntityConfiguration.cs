@@ -24,5 +24,7 @@ public class FoodEntityConfiguration : IEntityTypeConfiguration<FoodEntity>
             .HasJsonConversion();
         builder.Property(e => e.Macros)
             .HasJsonConversion();
+        builder.Property(e => e.Allergens)
+            .HasJsonConversion();
     }
 }

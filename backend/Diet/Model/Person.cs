@@ -1,10 +1,19 @@
 ﻿namespace Diet.Model;
 
+public class Target
+{
+    public required string Name { get; set; } = null!;
+    public required string Key { get; set; } = null!;
+    public required string Rule { get; set; } = null!; // minimum, maximum, free 
+    public double? Value { get; set; }
+}
+
 public class PersonEntity
 {
     public Guid Id { get; set; }
     public List<MealEntity> Meals { get; set; } = [];
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
+    public required List<Target> Targets { get; set; }
     public long CreatedAt { get; set; }
     public long LastUpdated { get; set; }
     public int Deleted { get; set; }
@@ -12,9 +21,10 @@ public class PersonEntity
 
 public class PersonDto
 {
-    public required Guid Id { get; set; }
+    public Guid Id { get; set; }
     public required string Name { get; set; }
-    public required long CreatedAt { get; set; }
-    public required long LastUpdated { get; set; }
-    public required int Deleted { get; set; }
+    public List<Target>? Targets { get; set; }
+    public long CreatedAt { get; set; }
+    public long LastUpdated { get; set; }
+    public int Deleted { get; set; }
 }

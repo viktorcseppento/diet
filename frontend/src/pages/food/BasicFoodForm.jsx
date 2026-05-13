@@ -141,7 +141,7 @@ export default function BasicFoodForm(props) {
                     />
                 </div>
                 <div class={appStyles.formField}>
-                    <label htmlFor='fiber'>Rost (g):</label>
+                    <label htmlFor='fiber'>Ebből rost (g):</label>
                     <input
                         class={appStyles.smallInput}
                         id='fiber'

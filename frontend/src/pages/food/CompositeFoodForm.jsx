@@ -10,6 +10,7 @@ import createLiveQuery from '../../hooks/createLiveQuery';
 import { getAmountMultiple, multiplyFood, sumIngredients } from '../../utils/calculations';
 import { MEASURE_UNITS } from '../../utils/enums';
 import { renderMacros } from '../../utils/renderUtils';
+import { foodNameWithMeasure } from '../../utils/utils';
 import styles from './CompositeFoodForm.module.scss';
 
 export default function CompositeFoodForm(props) {
@@ -34,7 +35,7 @@ export default function CompositeFoodForm(props) {
 
     createEffect(() => {
         setFormData('ingredients', ingredients());
-        setIngredientTexts(ingredients().map(i => `${i.food.name} - ${MEASURE_UNITS.find(m => m.key === i.food.measure).label}`));
+        setIngredientTexts(ingredients().map(i => foodNameWithMeasure(i.food)));
     });
 
     const ingredientsValid = createMemo(() =>
@@ -117,7 +118,16 @@ export default function CompositeFoodForm(props) {
                     <For each={formData.ingredients}>{(ingredient, idx) => (
                         <div class={styles.ingredient}>
                             <div class={styles.ingredientHeader}>
-                                <Popover modal={false}>
+                                <Popover
+                                    modal={false}
+                                    onOpenChange={(open) => {
+                                        if (open)
+                                            return;
+                                        const food = formData.ingredients[idx()].food;
+                                        const foodName = food ? foodNameWithMeasure(food) : '';
+                                        setIngredientTexts(idx(), foodName ?? '');
+                                    }}
+                                >
                                     <Popover.Trigger
                                         class={styles.foodSelect}
                                         as='input'
@@ -138,19 +148,20 @@ export default function CompositeFoodForm(props) {
                                         <Dropdown
                                             items={foods().map(f => ({
                                                 id: f.id,
-                                                name: `${f.name} - ${MEASURE_UNITS.find(m => m.key === f.measure).label}`
+                                                name: foodNameWithMeasure(f)
                                             }))}
                                             searchText={ingredientTexts[idx()]}
                                             selectedId={ingredient.food?.id}
                                             disabledIds={[...formData.ingredients.map(i => i.food?.id).filter(i => i !== ingredient.id), props.initialData?.id]}
                                             onSelect={(selectedId) => {
                                                 const food = foods().find(f => f.id === selectedId);
+                                                const currentData = formData.ingredients[idx()];
                                                 setFormData('ingredients', [
                                                     ...formData.ingredients.slice(0, idx()),
-                                                    { food: food, amount: null },
+                                                    { ...currentData, food: food },
                                                     ...formData.ingredients.slice(idx() + 1)
                                                 ]);
-                                                setIngredientTexts(idx(), `${food.name} - ${MEASURE_UNITS.find(m => m.key === food.measure).label}`);
+                                                setIngredientTexts(idx(), foodNameWithMeasure(food));
                                             }}
                                         />
                                     </Popover.Content>

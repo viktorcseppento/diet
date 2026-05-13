@@ -10,6 +10,7 @@ public static class EntityConversionExtensions
         {
             Id = dto.Id,
             Name = dto.Name,
+            Targets = dto.Targets ?? [],
             CreatedAt = dto.CreatedAt,
             LastUpdated = dto.LastUpdated,
             Deleted = dto.Deleted
@@ -22,6 +23,7 @@ public static class EntityConversionExtensions
         {
             Id = entity.Id,
             Name = entity.Name,
+            Targets = entity.Targets,
             CreatedAt = entity.CreatedAt,
             LastUpdated = entity.LastUpdated,
             Deleted = entity.Deleted
@@ -69,6 +71,7 @@ public static class EntityConversionExtensions
             Ingredients = dto.Ingredients,
             Amount = dto.Amount,
             Macros = dto.Macros,
+            Allergens = dto.Allergens ?? new Allergens(),
             Deleted = dto.Deleted,
             CreatedAt = dto.CreatedAt,
             LastUpdated = dto.LastUpdated
@@ -87,6 +90,7 @@ public static class EntityConversionExtensions
             Ingredients = entity.Ingredients,
             Amount = entity.Amount,
             Macros = entity.Macros,
+            Allergens = entity.Allergens,
             Deleted = entity.Deleted,
             CreatedAt = entity.CreatedAt,
             LastUpdated = entity.LastUpdated

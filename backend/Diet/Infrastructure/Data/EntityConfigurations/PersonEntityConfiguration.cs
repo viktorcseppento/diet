@@ -1,4 +1,5 @@
-﻿using Diet.Model;
+﻿using Diet.Infrastructure.Data.Converters;
+using Diet.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,5 +14,7 @@ public class PersonEntityConfiguration : IEntityTypeConfiguration<PersonEntity>
         builder.Property(e => e.Name)
             .IsRequired()
             .HasMaxLength(200);
+        builder.Property(e => e.Targets)
+            .HasJsonConversion();
     }
 }

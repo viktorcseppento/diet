@@ -29,6 +29,11 @@ export async function putData(foods, meals, people, foodsDeleteIds, mealsDeleteI
         await tx.foods.bulkPut(foods);
         await tx.meals.bulkPut(meals);
         await tx.people.bulkPut(people);
-        await tx.meta.put({ key: 'lastSync', value: timestamp });
+
+        const lastSyncRecord = await tx.meta.get({ key: 'lastSync' });
+        if (lastSyncRecord)
+            await tx.meta.update(lastSyncRecord.id, { value: timestamp });
+        else
+            await tx.meta.add({ key: 'lastSync', value: timestamp });
     });
 }

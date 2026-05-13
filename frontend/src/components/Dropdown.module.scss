@@ -5,7 +5,7 @@
     background-color: white;
     width: 250px;
     height: 300px;
-    padding: 8px;
+    padding: 8px 4px;
     border-radius: 8px;
     box-shadow: $popover-shadow;
     border: solid 1px $light-border-color;
@@ -38,7 +38,7 @@
     background-color: $selected-background-color;
 
     &:hover {
-        background-color: $selected-background-color-hover;
+        background-color: $selected-background-color-hover !important;
     }
 
     color: white !important;

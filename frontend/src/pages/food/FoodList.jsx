@@ -1,5 +1,5 @@
 import { Button } from '@kobalte/core/button';
-import { createMemo, createSignal, For, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, For } from 'solid-js';
 import appStyles from '~/App.module.scss';
 import SearchBox from '../../components/SearchBox';
 import { useConfirmDialogContext } from '../../context/ConfirmDialogContext';
@@ -67,9 +67,20 @@ export default function FoodList() {
     );
 
     function Column(props) {
-        const filteredFoods = createMemo(() => foods()
-            .filter(food => food.type === props.type && food.name.toLowerCase().includes(search().toLowerCase())));
         const isCollapsed = createMemo(() => props.type === 'BASIC' ? collapsed().basic : collapsed().composite);
+        const filteredFoods = createMemo(() => {
+            // if(isCollapsed()) return [];
+            return foods()
+                .filter(food => food.type === props.type && food.name.toLowerCase().includes(search().toLowerCase()));
+        });
+
+        let listRef;
+        createEffect(() => {
+            listRef.style.height = filteredFoods().length * 134 + "px";
+            if (isCollapsed()) {
+                listRef.style.height = "0";
+            }
+        });
 
         return (
             <div class={styles.column}>
@@ -85,10 +96,12 @@ export default function FoodList() {
                         <i class='fa-solid fa-chevron-down' />
                     </span>
                 </span>
-                <div class={styles.list} data-collapsed-transform={isCollapsed() && filteredFoods().length < 20 ? "" : undefined} >
-                    <Show when={!isCollapsed() || isCollapsed() && filteredFoods().length < 20}>
-                        <For each={filteredFoods()}>{food => renderFoodItem(food, props.type)}</For>
-                    </Show>
+                <div
+                    class={styles.list}
+                    data-collapsed-transform={isCollapsed() ? "" : undefined}
+                    ref={listRef}
+                >
+                    <For each={filteredFoods()}>{food => renderFoodItem(food, props.type)}</For>
                 </div>
             </div>
         );

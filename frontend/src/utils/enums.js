@@ -22,3 +22,9 @@ export const FOOD_TYPES = [
     { id: 0, key: 'BASIC', label: 'Alap' },
     { id: 1, key: 'COMPOSITE', label: 'Összetett' }
 ];
+
+export const RULES = [
+    { id: 0, key: 'MINIMUM', label: 'Minimum' },
+    { id: 1, key: 'MAXIMUM', label: 'Maximum' },
+    { id: 2, key: 'FREE', label: 'Mentes' },
+]

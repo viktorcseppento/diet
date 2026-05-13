@@ -10,7 +10,6 @@ export default function Dropdown(props) {
 
     createEffect(() => {
         const search = props.searchText?.toLowerCase();
-        
         setFilteredItems(props.items.filter(item => item.name.toLowerCase().includes(search)));
     });
 
