@@ -41,7 +41,6 @@
 }
 
 .dropdownButton {
-    // border: solid 2px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -97,7 +96,7 @@
 .dayControl {
     display: flex;
     align-items: center;
-    flex: 1 1 auto; // gap: 16px;
+    flex: 1 1 auto;
     height: 48px;
 
     @media screen and (min-width: 768px) {

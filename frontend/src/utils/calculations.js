@@ -13,14 +13,14 @@ export function multiplyFood(macros, factor) {
     };
 }
 
-export function sumFoods(...foods) {
-    return foods.reduce((acc, food) => ({
-        fat: acc.fat + food.fat,
-        fatSaturated: acc.fatSaturated + food.fatSaturated,
-        fastCarbohydrate: acc.fastCarbohydrate + food.fastCarbohydrate,
-        slowCarbohydrate: acc.slowCarbohydrate + food.slowCarbohydrate,
-        fiber: acc.fiber + food.fiber,
-        protein: acc.protein + food.protein
+export function sumMacros(...macrosList) {
+    return macrosList.reduce((acc, macros) => ({
+        fat: acc.fat + macros.fat,
+        fatSaturated: acc.fatSaturated + macros.fatSaturated,
+        fastCarbohydrate: acc.fastCarbohydrate + macros.fastCarbohydrate,
+        slowCarbohydrate: acc.slowCarbohydrate + macros.slowCarbohydrate,
+        fiber: acc.fiber + macros.fiber,
+        protein: acc.protein + macros.protein
     }), {
         fat: 0,
         fatSaturated: 0,
@@ -32,7 +32,7 @@ export function sumFoods(...foods) {
 }
 
 // ingredients: { food: { name, measure, macros: { fat, ..., } }, amount }
-export function sumIngredients(ingredients) {
+export function macrosFromIngredients(ingredients) {
     return ingredients.reduce((acc, ingredient) => {
         const amountMultiple = getAmountMultiple(ingredient.food.measure, ingredient.amount);
         return ({
@@ -51,6 +51,15 @@ export function sumIngredients(ingredients) {
         fiber: 0,
         protein: 0
     });
+}
+
+export function allergensFromFoods(foods) {
+    return {
+        addedSugar: foods.some(f => f.allergens.addedSugar),
+        dairy: foods.some(f => f.allergens.dairy),
+        egg: foods.some(f => f.allergens.egg),
+        gluten: foods.some(f => f.allergens.gluten)
+    }
 }
 
 export function getAmount(measureUnit, amountMultiple) {
@@ -85,4 +94,34 @@ export function getMacros(food, amount, measureUnit) {
         fiber: food.fiber * amountMultiple,
         protein: food.protein * amountMultiple
     };
+}
+
+export function allTargetableValuesFromFoods(foods) {
+    return {
+        ...foods.reduce((acc, f) => {
+            return {
+                kcal: acc.kcal + calculateCalories(f.macros),
+                fat: acc.fat + f.macros.fat,
+                fatSaturated: acc.fatSaturated + f.macros.fatSaturated,
+                carbohydrate: acc.carbohydrate + f.macros.fastCarbohydrate + f.macros.slowCarbohydrate,
+                fastCarbohydrate: acc.fastCarbohydrate + f.macros.fastCarbohydrate,
+                slowCarbohydrate: acc.slowCarbohydrate + f.macros.slowCarbohydrate,
+                fiber: acc.fiber + f.macros.fiber,
+                protein: acc.protein + f.macros.protein
+            };
+        }, {
+            kcal: 0,
+            fat: 0,
+            fatSaturated: 0,
+            carbohydrate: 0,
+            fastCarbohydrate: 0,
+            slowCarbohydrate: 0,
+            fiber: 0,
+            protein: 0
+        }),
+        addedSugar: foods.some(f => f.allergens.addedSugar),
+        dairy: foods.some(f => f.allergens.dairy),
+        egg: foods.some(f => f.allergens.egg),
+        gluten: foods.some(f => f.allergens.gluten)
+    }
 }

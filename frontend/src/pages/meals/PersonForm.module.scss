@@ -1,2 +1,74 @@
 @use '~/index.scss' as *;
 @use 'sass:color';
+
+.targetButton {
+    border: solid 1px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    border-radius: 8px;
+    padding: 4px 6px;
+    font-size: 14px;
+}
+
+.targetsList {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border: 1px solid ;
+    border-radius: 4px;
+}
+
+.targetRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    padding: 8px;
+    border: solid 1px $light-border-color;
+    border-radius: 4px;
+
+    &:nth-child(odd) {
+        background-color: $item-color;
+    }
+
+    &:nth-child(even) {
+        background-color: $item-alt-color;
+    }
+}
+
+.targetFields {
+    display: flex;
+    flex-flow: wrap;
+    column-gap: 8px;
+    row-gap: 8px;
+}
+
+.trashButton {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    color: $trash-color;
+
+    &:hover {
+        background-color: transparent;
+        color: $trash-color-hover;
+    }
+}
+
+.select option {
+    &:first-child {
+        display: none;
+    }
+}
+
+.placeholder {
+    color: gray;
+}
+
+.option {
+    color: black;
+}

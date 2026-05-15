@@ -4,12 +4,13 @@ import { useConfirmDialogContext } from '../../context/ConfirmDialogContext';
 import { useDialogContext } from '../../context/DialogContext';
 import { getFoodsByMeal, getMealsByPersonAndDay, removeMeal } from '../../data/mealRepository';
 import createLiveQuery from '../../hooks/createLiveQuery';
-import { getMacros, sumFoods, sumIngredients } from '../../utils/calculations';
+import { allergensFromFoods, getMacros, macrosFromIngredients, sumMacros } from '../../utils/calculations';
 import { mesaureUnitToText } from '../../utils/enums';
 import { renderMacros } from '../../utils/renderUtils';
 import { classList, timeStrFromDateTime } from '../../utils/utils';
 import MealForm from './MealForm';
 import styles from './MealsList.module.scss';
+import Targets from './Targets';
 
 export default function MealsList(props) {
     const { setDialogData } = useDialogContext();
@@ -17,21 +18,25 @@ export default function MealsList(props) {
     const meals = createLiveQuery(() => getMealsByPersonAndDay(props.person()?.id, props.day()), props.person, props.day);
 
     const sortedMeals = createMemo(() => [...meals()].sort((m1, m2) => m2.timestamp - m1.timestamp));
-    const [mealsWithFoodsAndMacros] = createResource(sortedMeals, async sortedMeals => {
+    const [mealsWithFoodsAndMacrosAllergens] = createResource(sortedMeals, async sortedMeals => {
         return await Promise.all(sortedMeals.map(async meal => {
             const foods = await getFoodsByMeal(meal.id);
             return ({
                 ...meal,
                 foods,
-                macros: sumIngredients(foods)
+                macros: macrosFromIngredients(foods),
+                allergens: allergensFromFoods(foods.map(f => f.food))
             });
         }));
     }, { initialValue: [] });
 
     return (
         <div class={styles.container}>
+            <Show when={props.person()?.targets.length > 0}>
+                <Targets targets={props.person().targets} meals={mealsWithFoodsAndMacrosAllergens} />
+            </Show>
             <div class={styles.dayMacros}>
-                {renderMacros(sumFoods(...mealsWithFoodsAndMacros().map(m => m.macros)))}
+                {renderMacros(sumMacros(...mealsWithFoodsAndMacrosAllergens().map(m => m.macros)))}
             </div>
             <Button
                 disabled={!props.person()}
@@ -50,7 +55,7 @@ export default function MealsList(props) {
                 <i class={`fa-solid fa-plus`} />Új étkezés
             </Button>
             <div class={styles.mealsList}>
-                <For each={mealsWithFoodsAndMacros()}>
+                <For each={mealsWithFoodsAndMacrosAllergens()}>
                     {meal => (
                         <div class={styles.meal}>
                             <div class={styles.mealHeader}>

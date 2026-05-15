@@ -24,7 +24,11 @@ export async function addPerson(person) {
 
 export async function editPerson(id, person) {
     await db.transaction('rw', db.people, db.syncQueue, async (tx) => {
-        await db.people.update(id, { name: person.name, lastUpdated: Date.now() });
+        await db.people.update(id, {
+            name: person.name,
+            targets: person.targets,
+            lastUpdated: Date.now()
+        });
         const updatedPerson = await db.people.get(id);
         await addSyncRecord(tx, updatedPerson.id, 'people', updatedPerson);
     });

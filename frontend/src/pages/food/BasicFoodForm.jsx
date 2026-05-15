@@ -19,7 +19,11 @@ export default function BasicFoodForm(props) {
             carbohydrate: props.initialData.macros.fastCarbohydrate + props.initialData.macros.slowCarbohydrate,
             fiber: props.initialData.macros.fiber,
             slowAbsorption: props.initialData.macros.slowCarbohydrate > 0,
-            protein: props.initialData.macros.protein
+            protein: props.initialData.macros.protein,
+            addedSugar: props.initialData.allergens?.addedSugar || false,
+            dairy: props.initialData.allergens?.dairy || false,
+            egg: props.initialData.allergens?.egg || false,
+            gluten: props.initialData.allergens?.gluten || false
         } : {
             name: '',
             measure: { ...MEASURE_UNITS[0] },
@@ -28,7 +32,11 @@ export default function BasicFoodForm(props) {
             carbohydrate: 0,
             fiber: 0,
             slowAbsorption: false,
-            protein: 0
+            protein: 0,
+            addedSugar: false,
+            dairy: false,
+            egg: false,
+            gluten: false
         });
 
     const valid = createMemo(() => {
@@ -53,7 +61,13 @@ export default function BasicFoodForm(props) {
                     fastCarbohydrate: !formData.slowAbsorption ? formData.carbohydrate : 0,
                     slowCarbohydrate: formData.slowAbsorption ? formData.carbohydrate : 0,
                     fiber: formData.fiber,
-                    protein: formData.protein
+                    protein: formData.protein,
+                },
+                allergens: {
+                    addedSugar: formData.addedSugar,
+                    dairy: formData.dairy,
+                    egg: formData.egg,
+                    gluten: formData.gluten
                 }
             });
             setDialogOpen(false);
@@ -70,6 +84,12 @@ export default function BasicFoodForm(props) {
                 slowCarbohydrate: formData.slowAbsorption ? formData.carbohydrate : 0,
                 fiber: formData.fiber,
                 protein: formData.protein
+            },
+            allergens: {
+                addedSugar: formData.addedSugar,
+                dairy: formData.dairy,
+                egg: formData.egg,
+                gluten: formData.gluten
             }
         });
 
@@ -174,6 +194,48 @@ export default function BasicFoodForm(props) {
                     value={formData.protein}
                     onInput={(e) => setFormData('protein', parseFloat(e.currentTarget.value || 0))}
                 />
+            </div>
+            <div class={appStyles.formRow}>
+                <div class={appStyles.formField}>
+                    <label htmlFor='addedSugar'>Hozzáadott cukor?:</label>
+                    <input
+                        type="checkbox"
+                        class={styles.checkbox}
+                        id='addedSugar'
+                        checked={formData.addedSugar}
+                        onInput={(e) => setFormData('addedSugar', e.currentTarget.checked)}
+                    />
+                </div>
+                <div class={appStyles.formField}>
+                    <label htmlFor='dairy'>Tejtermék?:</label>
+                    <input
+                        type="checkbox"
+                        class={styles.checkbox}
+                        id='dairy'
+                        checked={formData.dairy}
+                        onInput={(e) => setFormData('dairy', e.currentTarget.checked)}
+                    />
+                </div>
+                <div class={appStyles.formField}>
+                    <label htmlFor='egg'>Tojás?:</label>
+                    <input
+                        type="checkbox"
+                        class={styles.checkbox}
+                        id='egg'
+                        checked={formData.egg}
+                        onInput={(e) => setFormData('egg', e.currentTarget.checked)}
+                    />
+                </div>
+                <div class={appStyles.formField}>
+                    <label htmlFor='gluten'>Glutén?:</label>
+                    <input
+                        type="checkbox"
+                        class={styles.checkbox}
+                        id='gluten'
+                        checked={formData.gluten}
+                        onInput={(e) => setFormData('gluten', e.currentTarget.checked)}
+                    />
+                </div>
             </div>
             <Button
                 class={appStyles.formButton}

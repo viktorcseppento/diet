@@ -82,11 +82,10 @@
 .formField {
     align-items: center;
     display: flex;
-    gap: 8px;
+    gap: 4px;
 }
 
 .formFieldColumn {
-    // align-items: center;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -98,6 +97,10 @@
 
 .mediumInput {
     width: 40px;
+}
+
+.longerInput {
+    width: 80px;
 }
 
 .formButton {

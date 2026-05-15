@@ -7,7 +7,7 @@ import Dropdown from '../../components/Dropdown';
 import { useDialogContext } from '../../context/DialogContext';
 import { addFood, editFood, getFoods, getIngredients } from '../../data/foodRepository';
 import createLiveQuery from '../../hooks/createLiveQuery';
-import { getAmountMultiple, multiplyFood, sumIngredients } from '../../utils/calculations';
+import { getAmountMultiple, multiplyFood, macrosFromIngredients, allergensFromFoods } from '../../utils/calculations';
 import { MEASURE_UNITS } from '../../utils/enums';
 import { renderMacros } from '../../utils/renderUtils';
 import { foodNameWithMeasure } from '../../utils/utils';
@@ -49,7 +49,7 @@ export default function CompositeFoodForm(props) {
 
     const allMacros = createMemo(() => {
         if (ingredientsValid())
-            return sumIngredients(formData.ingredients.filter(i => (i.food && i.amount)));
+            return macrosFromIngredients(formData.ingredients.filter(i => (i.food && i.amount)));
         else
             return {};
     });
@@ -58,6 +58,14 @@ export default function CompositeFoodForm(props) {
         if (ingredientsValid() && formData.amount > 0 && formData.measure) {
             const amountMultiple = getAmountMultiple(formData.measure.key, formData.amount);
             return multiplyFood(allMacros(), 1 / amountMultiple);
+        }
+        else
+            return {};
+    });
+
+    const allergens = createMemo(() => {
+        if (ingredientsValid() && formData.amount > 0 && formData.measure) {
+            return allergensFromFoods(formData.ingredients.map(i => i.food));
         }
         else
             return {};
@@ -72,7 +80,8 @@ export default function CompositeFoodForm(props) {
                 measure: formData.measure.key,
                 amount: formData.amount,
                 ingredients: formData.ingredients.map(i => ({ foodId: i.food.id, foodName: i.food.name, amount: i.amount })),
-                macros: macros()
+                macros: macros(),
+                allergens: allergens()
             });
             setDialogOpen(false);
             return;
@@ -83,7 +92,8 @@ export default function CompositeFoodForm(props) {
             measure: formData.measure.key,
             amount: formData.amount,
             ingredients: formData.ingredients.map(i => ({ foodId: i.food.id, foodName: i.food.name, amount: i.amount })),
-            macros: macros()
+            macros: macros(),
+            allergens: allergens()
         });
         setDialogOpen(false);
     };

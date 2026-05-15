@@ -9,7 +9,7 @@ import { useDialogContext } from '../../context/DialogContext';
 import { getFoods } from '../../data/foodRepository';
 import { addMeal, editMeal } from '../../data/mealRepository';
 import createLiveQuery from '../../hooks/createLiveQuery';
-import { sumIngredients } from '../../utils/calculations';
+import { macrosFromIngredients } from '../../utils/calculations';
 import { MEASURE_UNITS } from '../../utils/enums';
 import { renderMacros } from '../../utils/renderUtils';
 import { timeStrFromDateTime } from '../../utils/utils';
@@ -59,7 +59,7 @@ export default function MealForm(props) {
 
     const macros = createMemo(() => {
         if (valid())
-            return sumIngredients(formData.foods.filter(i => (i.food && i.amount)));
+            return macrosFromIngredients(formData.foods.filter(i => (i.food && i.amount)));
         else
             return {};
     });
