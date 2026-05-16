@@ -1,7 +1,7 @@
 import { Button } from '@kobalte/core/button';
 import { DropdownMenu } from '@kobalte/core/dropdown-menu';
 import { Popover } from '@kobalte/core/popover';
-import { createEffect, createMemo, createResource, createSignal, For } from 'solid-js';
+import { createEffect, createMemo, createSignal, For } from 'solid-js';
 import appStyles from '~/App.module.scss';
 import DatePicker from '../../components/DatePicker';
 import { useConfirmDialogContext } from '../../context/ConfirmDialogContext';
@@ -24,10 +24,13 @@ export default function Meals() {
     const [selectedDay, setSelectedDay] = createSignal({ year: today.getFullYear(), month: today.getMonth(), day: today.getDate() });
 
     const selectedPerson = createMemo(() => selectedPersonIdx() != null ? people()[selectedPersonIdx()] : null);
+    const mealDates = createLiveQuery(() => getMealDatesByPerson(selectedPerson()?.id), selectedPerson);
 
-    const [mealDates] = createResource(selectedPerson, async person => {
-        return await getMealDatesByPerson(person.id);
-    });
+    const isToday = createMemo(() =>
+        selectedDay().year === today.getFullYear() &&
+        selectedDay().month === today.getMonth() &&
+        selectedDay().day === today.getDate()
+    );
 
     createEffect(() => {
         if (people().length === 0) {
@@ -172,7 +175,7 @@ export default function Meals() {
                     </Popover>
                     <Button
                         class={classList(styles.iconButton, styles.dayChevronButton)}
-                        disabled={!selectedPerson()}
+                        disabled={!selectedPerson() || isToday()}
                         onClick={() => navigateDay(1)}
                     >
                         <i class="fa-solid fa-chevron-right" />

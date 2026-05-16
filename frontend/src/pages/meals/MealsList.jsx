@@ -10,6 +10,7 @@ import { renderMacros } from '../../utils/renderUtils';
 import { classList, timeStrFromDateTime } from '../../utils/utils';
 import MealForm from './MealForm';
 import styles from './MealsList.module.scss';
+import Statistics from './Statistics';
 import Targets from './Targets';
 
 export default function MealsList(props) {
@@ -32,28 +33,45 @@ export default function MealsList(props) {
 
     return (
         <div class={styles.container}>
+            <div class={styles.buttons}>
+                <Button
+                    disabled={!props.person()}
+                    class={styles.button}
+                    onClick={() => setDialogData(() => ({
+                        isOpen: true,
+                        title: 'Új étkezés',
+                        content: () => (
+                            <MealForm
+                                personId={props.person().id}
+                                day={props.day}
+                            />
+                        )
+                    }))}
+                >
+                    <i class={`fa-solid fa-plus`} />Új étkezés
+                </Button>
+                <Button
+                    disabled={!props.person()}
+                    class={styles.button}
+                    onClick={() => setDialogData(() => ({
+                        isOpen: true,
+                        title: 'Statisztikák',
+                        content: () => (
+                            <Statistics
+                                person={props.person}
+                            />
+                        )
+                    }))}
+                >
+                    Statisztikák
+                </Button>
+            </div>
             <Show when={props.person()?.targets.length > 0}>
                 <Targets targets={props.person().targets} meals={mealsWithFoodsAndMacrosAllergens} />
             </Show>
             <div class={styles.dayMacros}>
                 {renderMacros(sumMacros(...mealsWithFoodsAndMacrosAllergens().map(m => m.macros)))}
             </div>
-            <Button
-                disabled={!props.person()}
-                class={styles.newMealButton}
-                onClick={() => setDialogData(() => ({
-                    isOpen: true,
-                    title: 'Új étkezés',
-                    content: () => (
-                        <MealForm
-                            personId={props.person().id}
-                            day={props.day}
-                        />
-                    )
-                }))}
-            >
-                <i class={`fa-solid fa-plus`} />Új étkezés
-            </Button>
             <div class={styles.mealsList}>
                 <For each={mealsWithFoodsAndMacrosAllergens()}>
                     {meal => (

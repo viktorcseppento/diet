@@ -1,9 +1,9 @@
 import { Button } from '@kobalte/core/button';
-import styles from './DatePicker.module.scss';
-import appStyles from '~/App.module.scss';
-import { createMemo, createSignal, For, Show } from 'solid-js';
-import { classList, translateDay, translateMonth } from '../utils/utils';
 import { DropdownMenu } from '@kobalte/core/dropdown-menu';
+import { createMemo, createSignal, For, Show } from 'solid-js';
+import appStyles from '~/App.module.scss';
+import { classList, translateDay, translateMonth } from '../utils/utils';
+import styles from './DatePicker.module.scss';
 
 function convertDay(day) {
     if (day === 0) return 6;
@@ -142,6 +142,7 @@ export default function DatePicker(props) {
                     <span
                         class={classList(
                             styles.day,
+                            Date.UTC(date.year, date.month, date.day) > new Date().getTime() ? styles.disabledDay : '',
                             !date.currentMonth ? styles.otherMonth : '',
                             isSelected(date) ? styles.selectedDay : ''
                         )}

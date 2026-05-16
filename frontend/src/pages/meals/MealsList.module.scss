@@ -14,7 +14,12 @@
     font-size: 16px;
 }
 
-.newMealButton {
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -127,7 +132,7 @@
 .foodsList {
     display: flex;
     flex-direction: column;
-    border: 1px solid ;
+    border: 1px solid;
     border-radius: 4px;
     padding: 8px;
     row-gap: 8px;
@@ -150,7 +155,7 @@
     font-size: 16px;
 }
 
-.foodMacros{
+.foodMacros {
     display: flex;
     flex-direction: column;
     font-size: 14px;

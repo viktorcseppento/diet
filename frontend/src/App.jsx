@@ -23,7 +23,7 @@ export default function App() {
     <>
       <Tabs>
         <Tabs.List class={styles.tabsList}>
-          <Tabs.Trigger class={styles.tabsTrigger} value="meals-diary">Étkezési napló</Tabs.Trigger>
+          <Tabs.Trigger class={styles.tabsTrigger} value="meals-diary">Napló</Tabs.Trigger>
           <Tabs.Trigger class={styles.tabsTrigger} value="food">Élelmiszerek</Tabs.Trigger>
           <Tabs.Indicator class={styles.tabsIndicator} />
           <Button

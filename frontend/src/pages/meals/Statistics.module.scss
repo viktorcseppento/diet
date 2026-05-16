@@ -1,0 +1,81 @@
+@use '~/index.scss' as *;
+@use 'sass:color';
+
+.container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding-block: 16px;
+    padding-inline: 8px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(100vh - 160px);
+    max-width: 100vw;
+
+    border: solid 1px;
+    border-radius: 8px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0px;
+}
+
+.targets {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+}
+
+.targetsHeader {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.target {}
+
+.targetHeader {
+    font-weight: 600;
+}
+
+
+.targetContent {
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.grids {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding: 8px;
+    border: 1px solid $light-border-color;
+}
+
+.macros {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 120px repeat(3, 60px);
+    row-gap: 2px;
+    font-size: 12px;
+    padding-bottom: 12px;
+
+    overflow-x: auto;
+}
+
+.allergens {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 120px 80px;
+    row-gap: 2px;
+    font-size: 12px;
+
+    overflow-x: auto;
+}
+
+.tableHeader {
+    font-weight: 600;
+    margin-bottom: 4px;
+}

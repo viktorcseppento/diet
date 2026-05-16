@@ -21,6 +21,8 @@ export async function getMealsByPersonAndDay(personId, day) {
 }
 
 export async function getMealDatesByPerson(personId) {
+    if (personId == null)
+        return [];
     const meals = await db.meals.where('[deleted+personId]').equals([0, personId]).toArray();
     const dates = [...new Set(meals.map(meal => {
         const date = new Date(meal.date);

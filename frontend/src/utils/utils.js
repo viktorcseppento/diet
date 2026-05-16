@@ -1,11 +1,11 @@
 import { MEASURE_UNITS } from "./enums";
 
-export function formatNumber(num) {
-    if (isFinite(num)) {
-        return Math.round(num * 100) / 100;
-    } else {
+export function formatNumber(num, decimalPlaces = 2) {
+    if (!isFinite(num) || num === Number.MAX_VALUE) {
         return 0;
     }
+
+    return Math.round(num * 10 ** decimalPlaces) / 10 ** decimalPlaces;
 }
 
 export function timeStrFromDateTime(dateTime) {

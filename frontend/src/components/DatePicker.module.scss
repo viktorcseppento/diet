@@ -117,10 +117,6 @@
     font-weight: 600;
 }
 
-.otherMonth {
-    opacity: 0.4;
-}
-
 .selectedDay {
     background-color: $selected-background-color;
 
@@ -129,6 +125,15 @@
     }
 
     color: white;
+}
+
+.disabledDay {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.otherMonth {
+    opacity: 0.4;
 }
 
 .mark {
