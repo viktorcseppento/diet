@@ -7,6 +7,14 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: "http",
     cleartext: true
+  },
+  android: {
+    buildOptions: {
+      keystorePath: "diet-release.jks",
+      keystorePassword: "654321",
+      keystoreAlias: "diet-release",
+      keystoreAliasPassword: "654321"
+    }
   }
 };
 
