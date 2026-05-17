@@ -1,5 +1,5 @@
 import { Button } from '@kobalte/core/button';
-import { createEffect, createMemo, createSignal, For } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import appStyles from '~/App.module.scss';
 import SearchBox from '../../components/SearchBox';
 import { useConfirmDialogContext } from '../../context/ConfirmDialogContext';
@@ -8,7 +8,7 @@ import { getFoods, removeFood } from '../../data/foodRepository';
 import createLiveQuery from '../../hooks/createLiveQuery';
 import { measureUnitToLabel } from '../../utils/enums';
 import { renderMacros } from '../../utils/renderUtils';
-import { classList } from '../../utils/utils';
+import { classList, convertToDottedDateString } from '../../utils/utils';
 import BasicFoodForm from './BasicFoodForm';
 import CompositeFoodForm from './CompositeFoodForm';
 import styles from './FoodList.module.scss';
@@ -28,7 +28,7 @@ export default function FoodList() {
         return null;
     };
 
-    const renderFoodItem = (food, type) => (
+    const renderFoodItem = (food) => (
         <div class={styles.item}>
             <div class={styles.itemHeader}>
                 <span class={styles.name}>{`${food.name} - ${measureUnitToLabel(food.measure)}`}</span>
@@ -39,7 +39,7 @@ export default function FoodList() {
                             setDialogData(() => ({
                                 isOpen: true,
                                 title: `Étel módosítása`,
-                                content: getFormComponent(type, food)
+                                content: getFormComponent(food.type, food)
                             }));
                         }}
                     >
@@ -61,7 +61,12 @@ export default function FoodList() {
                 </span>
             </div>
             <div class={styles.description}>
-                {renderMacros(food.macros)}
+                <div class={styles.macros}>
+                    {renderMacros(food.macros)}
+                </div>
+                <Show when={food.type === 'COMPOSITE'}>
+                    <span class={styles.date}>{convertToDottedDateString(new Date(food.lastUpdated))}</span>
+                </Show>
             </div>
         </div>
     );
@@ -104,7 +109,7 @@ export default function FoodList() {
                     data-collapsed-transform={isCollapsed() ? "" : undefined}
                     ref={listRef}
                 >
-                    <For each={filteredFoods()}>{food => renderFoodItem(food, props.type)}</For>
+                    <For each={filteredFoods()}>{food => renderFoodItem(food)}</For>
                 </div>
             </div>
         );

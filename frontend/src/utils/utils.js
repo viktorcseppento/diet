@@ -33,3 +33,7 @@ export function translateDay(day) {
 export function foodNameWithMeasure(food) {
     return `${food.name} - ${MEASURE_UNITS.find(m => m.key === food.measure).label}`;
 }
+
+export function convertToDottedDateString(date) {
+    return date ? `${date.getFullYear()}. ${(date.getMonth() + 1).toString().padStart(2, '0')}. ${date.getDate().toString().padStart(2, '0')}.` : null;
+}
